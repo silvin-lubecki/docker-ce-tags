@@ -1,0 +1,4 @@
+UpstreamPath: /Users/silvin/dev/go/src/github.com/docker/docker-ce
+ComponentPath: /Users/silvin/dev/go/src/github.com/docker/cli
+ExportRepoPath: /Users/silvin/dev/go/src/github.com/silvin-lubecki/cli-extract
+Tag: 18.05
