@@ -13,26 +13,33 @@ func checkErr(err error) {
 }
 
 func main() {
-	if len(os.Args) != 2 {
-		fmt.Fprintf(os.Stderr, "Need a path to config file\n")
+	if len(os.Args) != 3 {
+		fmt.Fprintf(os.Stderr, "Usage: docker-ce-tags [diff-tags|commits] config.yml\n")
 		os.Exit(1)
 	}
-	config := loadConfig(os.Args[1])
-	printDiffTags(config)
-}
+	// Load config and remotes
+	config := loadConfig(os.Args[2])
+	dockerCe, err := NewRemote(config.UpstreamPath, config.UpstreamRemote)
+	checkErr(err)
+	component, err := NewRemote(config.ComponentPath, config.ComponentRemote)
+	checkErr(err)
 
-// ref, err := r.Head()
-// if err != nil {
-// 	panic(err.Error())
-// }
-// cIter, err := r.Log(&git.LogOptions{From: ref.Hash()})
-// if err != nil {
-// 	panic(err.Error())
-// }
-// err = cIter.ForEach(func(c *object.Commit) error {
-// 	//fmt.Println(c)
-// 	return nil
-// })
-// if err != nil {
-// 	panic(err.Error())
-// }
+	switch os.Args[1] {
+	case "diff-tags":
+		checkErr(printDiffTags(dockerCe, component))
+	case "commits":
+		commits, err := dockerCe.GetCommits(config.Tag)
+		checkErr(err)
+		for _, c := range commits {
+			tree, err := c.Tree()
+			checkErr(err)
+			cli, err := tree.Tree("components/" + config.Component)
+			if err == nil {
+				fmt.Println(len(cli.Entries))
+			}
+		}
+	default:
+		fmt.Fprintf(os.Stderr, "Usage: docker-ce-tags [diff-tags|commits] config.yml\n")
+		os.Exit(1)
+	}
+}

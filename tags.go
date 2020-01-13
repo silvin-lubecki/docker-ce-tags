@@ -2,51 +2,34 @@ package main
 
 import (
 	"fmt"
-	"sort"
-	"strings"
 
-	"gopkg.in/src-d/go-git.v4"
+	"gopkg.in/src-d/go-git.v4/plumbing/object"
 )
 
-func printDiffTags(config Config) {
-	dockerCeTags := getTags(config.UpstreamPath)
-	componentTags := getTags(config.ComponentPath)
+type Tag struct {
+	Name   string
+	Commit *object.Commit
+}
+
+func printDiffTags(dockerCe, component *Remote) error {
+	dockerCeTags, err := dockerCe.GetTags()
+	if err != nil {
+		return err
+	}
+	componentTags, err := component.GetTags()
+	if err != nil {
+		return err
+	}
 
 	tagsToAdd := diffTags(dockerCeTags, componentTags)
-
 	for _, tag := range tagsToAdd {
-		fmt.Println(tag)
+		fmt.Println(tag.Name)
 	}
+	return nil
 }
 
-func getTags(path string) []string {
-	r, err := git.PlainOpen(path)
-	checkErr(err)
-
-	remotes, err := r.Remotes()
-	checkErr(err)
-	var upstream *git.Remote
-	for _, remote := range remotes {
-		for _, url := range remote.Config().URLs {
-			if strings.Contains(url, "docker/") {
-				upstream = remote
-			}
-		}
-	}
-	refs, err := upstream.List(&git.ListOptions{})
-	checkErr(err)
-	var tags []string
-	for _, ref := range refs {
-		if ref.Name().IsTag() {
-			tags = append(tags, ref.Name().Short())
-		}
-	}
-	sort.Strings(tags)
-	return tags
-}
-
-func diffTags(upstreamTags, componentTags []string) []string {
-	var tagsToAdd []string
+func diffTags(upstreamTags, componentTags []Tag) []Tag {
+	var tagsToAdd []Tag
 	for _, up := range upstreamTags {
 		found := false
 		for _, comp := range componentTags {

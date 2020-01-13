@@ -7,10 +7,13 @@ import (
 )
 
 type Config struct {
-	UpstreamPath   string `yaml:"UpstreamPath"`
-	ComponentPath  string `yaml:"ComponentPath"`
-	ExportRepoPath string `yaml:"ExportRepoPath"`
-	Tag            string `yaml:"Tag"`
+	UpstreamPath          string `yaml:"UpstreamPath"`
+	UpstreamRemote        string `yaml:"UpstreamRemote"`
+	ComponentPath         string `yaml:"ComponentPath"`
+	ComponentRemote       string `yaml:"ComponentRemote"`
+	ComponentResultRemote string `yaml:"ComponentResultRemote"`
+	Tag                   string `yaml:"Tag"`
+	Component             string `yaml:"Component"`
 }
 
 func loadConfig(path string) Config {
