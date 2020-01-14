@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"gopkg.in/src-d/go-git.v4/plumbing/object"
 )
 
@@ -11,21 +9,17 @@ type Tag struct {
 	Commit *object.Commit
 }
 
-func printDiffTags(dockerCe, component *Remote) error {
+func computeDiffTags(dockerCe, component *Remote) ([]Tag, error) {
 	dockerCeTags, err := dockerCe.GetTags()
 	if err != nil {
-		return err
+		return nil, err
 	}
 	componentTags, err := component.GetTags()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	tagsToAdd := diffTags(dockerCeTags, componentTags)
-	for _, tag := range tagsToAdd {
-		fmt.Println(tag.Name)
-	}
-	return nil
+	return diffTags(dockerCeTags, componentTags), nil
 }
 
 func diffTags(upstreamTags, componentTags []Tag) []Tag {

@@ -14,7 +14,7 @@ func checkErr(err error) {
 
 func main() {
 	if len(os.Args) != 3 {
-		fmt.Fprintf(os.Stderr, "Usage: docker-ce-tags [diff-tags|commits] config.yml\n")
+		fmt.Fprintf(os.Stderr, "Usage: docker-ce-tags [diff-tags|commits|all-tags] config.yml\n")
 		os.Exit(1)
 	}
 	// Load config and remotes
@@ -26,20 +26,33 @@ func main() {
 
 	switch os.Args[1] {
 	case "diff-tags":
-		checkErr(printDiffTags(dockerCe, component))
-	case "commits":
-		commits, err := dockerCe.GetCommits(config.Tag)
+		tags, err := computeDiffTags(dockerCe, component)
 		checkErr(err)
-		for _, c := range commits {
-			tree, err := c.Tree()
+		for _, tag := range tags {
+			fmt.Println(tag.Name)
+		}
+
+	case "commits":
+		dockerCeCommit, componentCommit, err := FindCommitOnComponent(dockerCe, component, config.Tag, config.Component)
+		checkErr(err)
+		fmt.Println("***** docker/docker-ce")
+		fmt.Println(dockerCeCommit)
+		fmt.Println("***** docker/cli")
+		fmt.Println(componentCommit)
+
+	case "all-tags":
+		tags, err := computeDiffTags(dockerCe, component)
+		checkErr(err)
+		for _, tag := range tags {
+			dockerCeCommit, componentCommit, err := FindCommitOnComponent(dockerCe, component, tag.Name, config.Component)
 			checkErr(err)
-			cli, err := tree.Tree("components/" + config.Component)
-			if err == nil {
-				fmt.Println(len(cli.Entries))
+			if dockerCeCommit == nil || componentCommit == nil {
+				checkErr(fmt.Errorf("%q failed to get commits", tag.Name))
 			}
 		}
+
 	default:
-		fmt.Fprintf(os.Stderr, "Usage: docker-ce-tags [diff-tags|commits] config.yml\n")
+		fmt.Fprintf(os.Stderr, "Usage: docker-ce-tags [diff-tags|commits|all-tags] config.yml\n")
 		os.Exit(1)
 	}
 }
