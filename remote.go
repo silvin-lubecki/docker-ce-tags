@@ -126,27 +126,89 @@ func (r *Remote) FindCommitByMessage(message string) (*object.Commit, error) {
 	return found, nil
 }
 
-func (r *Remote) FindLatestCommonAncestor(initialCommit *object.Commit, component string) (*object.Commit, error) {
+func (r *Remote) FindLatestCommonAncestor(initialCommit *object.Commit, component string) (*object.Commit, []*object.Commit, error) {
 	current := initialCommit
+	var skipped []*object.Commit
 	for {
 		var (
 			next *object.Commit
 			err  error
 		)
-		// Merge commit from bot
+		// Merge commit from bot on selected component
 		if strings.Contains(current.Message, fmt.Sprintf("Merge component '%s'", component)) {
-			next, err = GetLastParent(current)
+			found, err := GetLastParent(current)
 			if err != nil {
-				return nil, err
+				return nil, nil, err
 			}
-			return next, nil
+			return found, deduplicate(skipped), nil
 		} else {
 			// Other commit (other component, or commit on docker-ce directly)
 			next, err = GetFirstParent(current)
 			if err != nil {
-				return nil, err
+				return nil, nil, err
+			}
+			if strings.Contains(current.Message, "Merge component") {
+				// DO NOTHING
+			} else if strings.Contains(current.Message, "Merge pull request") {
+				// Follow the PR and add all the commits related to component
+				commits, err := getComponentCommitsFromMerge(current, component)
+				fmt.Println(commits)
+				if err != nil {
+					return nil, nil, err
+				}
+				skipped = append(skipped, commits...)
+			} else {
+				// Some commit made directly on master, do we need to do something about it?
+				skipped = append(skipped, current)
 			}
 		}
 		current = next
 	}
+}
+
+func getComponentCommitsFromMerge(mergeCommit *object.Commit, component string) ([]*object.Commit, error) {
+	if b, err := isCommitOnComponent(mergeCommit, component); err != nil || !b {
+		return nil, err
+	}
+
+	var commits []*object.Commit
+	current, err := GetLastParent(mergeCommit)
+	if err != nil {
+		return nil, err
+	}
+	for {
+		if current.NumParents() > 1 {
+			return commits, nil
+		}
+		commits = append(commits, current)
+		current, err = GetFirstParent(current)
+		if err != nil {
+			return nil, err
+		}
+	}
+}
+
+func isCommitOnComponent(commit *object.Commit, component string) (bool, error) {
+	// Check if this commit impacts component
+	tree, err := commit.Tree()
+	if err != nil {
+		return false, err
+	}
+	componentTree, err := tree.Tree("components/" + component)
+	if err != nil {
+		return false, err
+	}
+	return len(componentTree.Entries) > 0, nil
+}
+
+func deduplicate(commits []*object.Commit) []*object.Commit {
+	seen := map[string]bool{}
+	deduplicated := []*object.Commit{}
+	for _, c := range commits {
+		if _, ok := seen[c.Hash.String()]; !ok {
+			seen[c.Hash.String()] = true
+			deduplicated = append(deduplicated, c)
+		}
+	}
+	return deduplicated
 }

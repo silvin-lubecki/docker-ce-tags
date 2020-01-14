@@ -4,4 +4,4 @@ ComponentPath: /Users/silvin/dev/go/src/github.com/docker/cli
 ComponentRemote: docker/cli
 ComponentResultRemote: silvin-lubecki/cli-extract
 Component: cli
-Tag: v17.11.0-ce-rc1
+Tag: v18.05.0-ce

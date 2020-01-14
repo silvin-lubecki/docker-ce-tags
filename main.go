@@ -33,18 +33,23 @@ func main() {
 		}
 
 	case "commits":
-		dockerCeCommit, componentCommit, err := FindCommitOnComponent(dockerCe, component, config.Tag, config.Component)
+		dockerCeCommit, componentCommit, skipped, err := FindCommitOnComponent(dockerCe, component, config.Tag, config.Component)
 		checkErr(err)
 		fmt.Println("***** docker/docker-ce")
 		fmt.Println(dockerCeCommit)
 		fmt.Println("***** docker/cli")
 		fmt.Println(componentCommit)
+		fmt.Println("***** Skipped commits")
+		for _, c := range skipped {
+			fmt.Println(c)
+		}
 
 	case "all-tags":
 		tags, err := computeDiffTags(dockerCe, component)
 		checkErr(err)
 		for _, tag := range tags {
-			dockerCeCommit, componentCommit, err := FindCommitOnComponent(dockerCe, component, tag.Name, config.Component)
+			fmt.Println("Checking", tag.Name)
+			dockerCeCommit, componentCommit, _, err := FindCommitOnComponent(dockerCe, component, tag.Name, config.Component)
 			checkErr(err)
 			if dockerCeCommit == nil || componentCommit == nil {
 				checkErr(fmt.Errorf("%q failed to get commits", tag.Name))

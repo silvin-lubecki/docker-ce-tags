@@ -65,27 +65,27 @@ func GetLastParent(commit *object.Commit) (*object.Commit, error) {
 	return parent, err
 }
 
-func FindCommitOnComponent(dockerCe, component *Remote, tagName, componentName string) (*object.Commit, *object.Commit, error) {
+func FindCommitOnComponent(dockerCe, component *Remote, tagName, componentName string) (*object.Commit, *object.Commit, []*object.Commit, error) {
 	// find commit related to selected tag
 	ref, err := dockerCe.FindReference(tagName)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 	tag, err := dockerCe.GetTagFromRef(ref)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 	// find latest mege commit comming from bot merging component
-	componentMergeCommit, err := dockerCe.FindLatestCommonAncestor(tag.Commit, componentName)
+	componentMergeCommit, skipped, err := dockerCe.FindLatestCommonAncestor(tag.Commit, componentName)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 	// clean that message
 	cleanedMessage := CleanCommitMessage(componentMergeCommit.Message)
 	// find that message in the upstream repo
 	componentCommit, err := component.FindCommitByMessage(cleanedMessage)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
-	return componentMergeCommit, componentCommit, nil
+	return componentMergeCommit, componentCommit, skipped, nil
 }
