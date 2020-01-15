@@ -39,7 +39,7 @@ func main() {
 		fmt.Println(dockerCeCommit)
 		fmt.Println("***** docker/cli")
 		fmt.Println(componentCommit)
-		fmt.Println("***** Skipped commits")
+		fmt.Println("***** Commits to add")
 		for _, c := range skipped {
 			fmt.Println(c)
 		}
