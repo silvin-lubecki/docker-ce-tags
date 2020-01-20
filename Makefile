@@ -6,5 +6,5 @@ build:
 tags:
 	./docker-ce-tags diff-tags config.yml
 
-commits:
-	./docker-ce-tags commits config.yml
+branch:
+	./docker-ce-tags branch config.yml

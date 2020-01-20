@@ -1,8 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"strings"
 
+	"gopkg.in/src-d/go-git.v4/plumbing/storer"
+
+	"gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing/object"
 )
 
@@ -65,27 +69,73 @@ func GetLastParent(commit *object.Commit) (*object.Commit, error) {
 	return parent, err
 }
 
-func FindCommitOnComponent(dockerCe, component *Remote, tagName, componentName string) (*object.Commit, *object.Commit, []*object.Commit, error) {
+func FindCommitOnComponent(dockerCe, component *Remote, tagName, componentName string) (*object.Commit, *object.Commit, error) {
 	// find commit related to selected tag
-	ref, err := dockerCe.FindReference(tagName)
+	tag, err := getTag(dockerCe, tagName)
 	if err != nil {
-		return nil, nil, nil, err
+		return nil, nil, err
 	}
-	tag, err := dockerCe.GetTagFromRef(ref)
-	if err != nil {
-		return nil, nil, nil, err
-	}
+
 	// find latest mege commit comming from bot merging component
-	componentMergeCommit, skipped, err := dockerCe.FindLatestCommonAncestor(tag.Commit, componentName)
+	componentMergeCommit, err := dockerCe.FindLatestCommonAncestor(tag.Commit, componentName)
 	if err != nil {
-		return nil, nil, nil, err
+		return nil, nil, err
 	}
 	// clean that message
 	cleanedMessage := CleanCommitMessage(componentMergeCommit.Message)
 	// find that message in the upstream repo
 	componentCommit, err := component.FindCommitByMessage(cleanedMessage)
 	if err != nil {
-		return nil, nil, nil, err
+		return nil, nil, err
 	}
-	return componentMergeCommit, componentCommit, skipped, nil
+	return componentMergeCommit, componentCommit, nil
+}
+
+func CherryPickOnBranch(dockerCe *Remote, branchName, component string) ([]*object.Commit, error) {
+	// First find common ancestor between master branch and targeted branch
+	master, err := dockerCe.GetHead("master")
+	if err != nil {
+		return nil, err
+	}
+	head, err := dockerCe.GetHead(branchName)
+	if err != nil {
+		return nil, err
+	}
+
+	cIter, err := dockerCe.repo.Log(&git.LogOptions{From: head.Hash})
+	if err != nil {
+		return nil, err
+	}
+	var commonAncestor *object.Commit
+	if err := cIter.ForEach(func(c *object.Commit) error {
+		if b, err := c.IsAncestor(master); err == nil && b {
+			commonAncestor = c
+			fmt.Printf("Ancestor %q found for branch %q\n", c.Hash, branchName)
+			return storer.ErrStop
+		}
+		return nil
+	}); err != nil {
+		return nil, err
+	}
+	if commonAncestor == nil {
+		return nil, fmt.Errorf("Could not find a common ancestor between %q and %q", "master", branchName)
+	}
+	// find all commits made only on DockerCE related to the selected component
+	commits, err := dockerCe.FindCommitsToCherryPick(head, commonAncestor, component)
+	if err != nil {
+		return nil, err
+	}
+	return commits, nil
+}
+
+func getTag(remote *Remote, tagName string) (Tag, error) {
+	ref, err := remote.FindReference(tagName)
+	if err != nil {
+		return Tag{}, err
+	}
+	tag, err := remote.GetTagFromRef(ref)
+	if err != nil {
+		return Tag{}, err
+	}
+	return tag, nil
 }

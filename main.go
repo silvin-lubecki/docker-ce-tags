@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"strings"
 )
 
 func checkErr(err error) {
@@ -14,7 +15,7 @@ func checkErr(err error) {
 
 func main() {
 	if len(os.Args) != 3 {
-		fmt.Fprintf(os.Stderr, "Usage: docker-ce-tags [diff-tags|commits|all-tags] config.yml\n")
+		fmt.Fprintf(os.Stderr, "Usage: docker-ce-tags [diff-tags|branch|all-tags] config.yml\n")
 		os.Exit(1)
 	}
 	// Load config and remotes
@@ -32,15 +33,12 @@ func main() {
 			fmt.Println(tag.Name)
 		}
 
-	case "commits":
-		dockerCeCommit, componentCommit, skipped, err := FindCommitOnComponent(dockerCe, component, config.Tag, config.Component)
+	case "branch":
+		cherryPicked, err := CherryPickOnBranch(dockerCe, config.Branch, config.Component)
 		checkErr(err)
-		fmt.Println("***** docker/docker-ce")
-		fmt.Println(dockerCeCommit)
-		fmt.Println("***** docker/cli")
-		fmt.Println(componentCommit)
-		fmt.Println("***** Commits to add")
-		for _, c := range skipped {
+		fmt.Println("Branch", config.Branch)
+		fmt.Println("Commits to cherry pick")
+		for _, c := range cherryPicked {
 			fmt.Println(c)
 		}
 
@@ -49,15 +47,25 @@ func main() {
 		checkErr(err)
 		for _, tag := range tags {
 			fmt.Println("Checking", tag.Name)
-			dockerCeCommit, componentCommit, _, err := FindCommitOnComponent(dockerCe, component, tag.Name, config.Component)
+			dockerCeCommit, componentCommit, err := FindCommitOnComponent(dockerCe, component, tag.Name, config.Component)
 			checkErr(err)
 			if dockerCeCommit == nil || componentCommit == nil {
 				checkErr(fmt.Errorf("%q failed to get commits", tag.Name))
 			}
+			fmt.Println("docker/docker-ce", dockerCeCommit.Hash, "docker/"+config.Component, componentCommit.Hash)
+		}
+
+	case "sign-off":
+		commits, err := dockerCe.GetCommits("master")
+		checkErr(err)
+		for _, c := range commits {
+			if !strings.Contains(c.Message, "Signed-off-by:") && !strings.Contains(c.Message, "Merge pull request") {
+				fmt.Println(c)
+			}
 		}
 
 	default:
-		fmt.Fprintf(os.Stderr, "Usage: docker-ce-tags [diff-tags|commits|all-tags] config.yml\n")
+		fmt.Fprintf(os.Stderr, "Usage: docker-ce-tags [diff-tags|branch|all-tags] config.yml\n")
 		os.Exit(1)
 	}
 }

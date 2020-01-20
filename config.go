@@ -12,7 +12,7 @@ type Config struct {
 	ComponentPath         string `yaml:"ComponentPath"`
 	ComponentRemote       string `yaml:"ComponentRemote"`
 	ComponentResultRemote string `yaml:"ComponentResultRemote"`
-	Tag                   string `yaml:"Tag"`
+	Branch                string `yaml:"Branch"`
 	Component             string `yaml:"Component"`
 }
 

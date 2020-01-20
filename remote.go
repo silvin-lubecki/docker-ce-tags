@@ -11,8 +11,9 @@ import (
 )
 
 type Remote struct {
-	repo   *git.Repository
-	remote *git.Remote
+	repo       *git.Repository
+	remote     *git.Remote
+	remoteName string
 }
 
 func NewRemote(path, remoteName string) (*Remote, error) {
@@ -37,7 +38,7 @@ func NewRemote(path, remoteName string) (*Remote, error) {
 		return nil, fmt.Errorf("remote %q not found", remoteName)
 	}
 
-	return &Remote{repository, upstream}, nil
+	return &Remote{repository, upstream, remoteName}, nil
 }
 
 func (r *Remote) GetCommits(reference string) ([]*object.Commit, error) {
@@ -57,6 +58,33 @@ func (r *Remote) GetCommits(reference string) ([]*object.Commit, error) {
 		return nil, err
 	}
 	return commits, nil
+}
+
+func (r *Remote) GetHead(branchName string) (*object.Commit, error) {
+	// Local branch
+	if branchRef, err := r.repo.Branch(branchName); err == nil && branchRef != nil {
+		ref, err := r.repo.Reference(branchRef.Merge, true)
+		if err != nil {
+			return nil, err
+		}
+		return r.repo.CommitObject(ref.Hash())
+	}
+
+	// remote branch
+	refs, err := r.repo.Storer.IterReferences()
+	if err != nil {
+		return nil, err
+	}
+	var branch *plumbing.Reference
+	if err := refs.ForEach(func(ref *plumbing.Reference) error {
+		if ref.Name().Short() == fmt.Sprintf("docker/%s", branchName) {
+			branch = ref
+		}
+		return nil
+	}); err != nil {
+		return nil, err
+	}
+	return r.repo.CommitObject(branch.Hash())
 }
 
 func (r *Remote) FindReference(name string) (*plumbing.Reference, error) {
@@ -126,26 +154,39 @@ func (r *Remote) FindCommitByMessage(message string) (*object.Commit, error) {
 	return found, nil
 }
 
-func (r *Remote) FindLatestCommonAncestor(initialCommit *object.Commit, component string) (*object.Commit, []*object.Commit, error) {
+func (r *Remote) FindLatestCommonAncestor(initialCommit *object.Commit, component string) (*object.Commit, error) {
 	current := initialCommit
-	var skipped []*object.Commit
 	for {
-		var (
-			next *object.Commit
-			err  error
-		)
 		// Merge commit from bot on selected component
 		if strings.Contains(current.Message, fmt.Sprintf("Merge component '%s'", component)) {
 			found, err := GetLastParent(current)
 			if err != nil {
-				return nil, nil, err
+				return nil, err
 			}
-			return found, deduplicate(skipped), nil
+			return found, nil
 		} else {
 			// Other commit (other component, or commit on docker-ce directly)
-			next, err = GetFirstParent(current)
+			next, err := GetFirstParent(current)
 			if err != nil {
-				return nil, nil, err
+				return nil, err
+			}
+			current = next
+		}
+	}
+}
+
+func (r *Remote) FindCommitsToCherryPick(initialCommit, finalCommit *object.Commit, component string) ([]*object.Commit, error) {
+	var cherryPicks []*object.Commit
+	current := initialCommit
+	for {
+		// We reached the previous tag, we can quit
+		if current.Hash == finalCommit.Hash {
+			return deduplicate(cherryPicks), nil
+		} else {
+			// Other commit (other component, or commit on docker-ce directly)
+			next, err := GetFirstParent(current)
+			if err != nil {
+				return nil, err
 			}
 			if strings.Contains(current.Message, "Merge component") {
 				// DO NOTHING
@@ -153,17 +194,17 @@ func (r *Remote) FindLatestCommonAncestor(initialCommit *object.Commit, componen
 				// Follow the PR and add all the commits related to component
 				commits, err := getComponentCommitsFromMerge(current, component)
 				if err != nil {
-					return nil, nil, err
+					return nil, err
 				}
-				skipped = append(skipped, commits...)
+				cherryPicks = append(cherryPicks, commits...)
 			} else {
 				// Some commit made directly on master, do we need to do something about it?
 				if b, err := isCommitOnComponent(current, component); err == nil && b {
-					skipped = append(skipped, current)
+					cherryPicks = append(cherryPicks, current)
 				}
 			}
+			current = next
 		}
-		current = next
 	}
 }
 
