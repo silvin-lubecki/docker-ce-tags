@@ -6,6 +6,7 @@ import (
 
 	"gopkg.in/src-d/go-git.v4/plumbing"
 	"gopkg.in/src-d/go-git.v4/plumbing/object"
+	"gopkg.in/src-d/go-git.v4/plumbing/storer"
 
 	"gopkg.in/src-d/go-git.v4"
 )
@@ -60,6 +61,21 @@ func (r *Remote) GetCommits(reference string) ([]*object.Commit, error) {
 	return commits, nil
 }
 
+func (r *Remote) GetCommitsFromHash(h plumbing.Hash) ([]*object.Commit, error) {
+	cIter, err := r.repo.Log(&git.LogOptions{From: h})
+	if err != nil {
+		return nil, err
+	}
+	var commits []*object.Commit
+	if err := cIter.ForEach(func(c *object.Commit) error {
+		commits = append(commits, c)
+		return nil
+	}); err != nil {
+		return nil, err
+	}
+	return commits, nil
+}
+
 func (r *Remote) GetHead(branchName string) (*object.Commit, error) {
 	// Local branch
 	if branchRef, err := r.repo.Branch(branchName); err == nil && branchRef != nil {
@@ -79,6 +95,7 @@ func (r *Remote) GetHead(branchName string) (*object.Commit, error) {
 	if err := refs.ForEach(func(ref *plumbing.Reference) error {
 		if ref.Name().Short() == fmt.Sprintf("docker/%s", branchName) {
 			branch = ref
+			return storer.ErrStop
 		}
 		return nil
 	}); err != nil {
@@ -146,6 +163,25 @@ func (r *Remote) FindCommitByMessage(message string) (*object.Commit, error) {
 	if err := cIter.ForEach(func(c *object.Commit) error {
 		if strings.HasPrefix(c.Message, message) {
 			found = c
+			return storer.ErrStop
+		}
+		return nil
+	}); err != nil {
+		return nil, err
+	}
+	return found, nil
+}
+
+func (r *Remote) FindCommitByMessageOnBranch(message string, from plumbing.Hash) (*object.Commit, error) {
+	cIter, err := r.repo.Log(&git.LogOptions{From: from})
+	if err != nil {
+		return nil, err
+	}
+	var found *object.Commit
+	if err := cIter.ForEach(func(c *object.Commit) error {
+		if strings.HasPrefix(c.Message, message) {
+			found = c
+			return storer.ErrStop
 		}
 		return nil
 	}); err != nil {
@@ -159,11 +195,11 @@ func (r *Remote) FindLatestCommonAncestor(initialCommit *object.Commit, componen
 	for {
 		// Merge commit from bot on selected component
 		if strings.Contains(current.Message, fmt.Sprintf("Merge component '%s'", component)) {
-			found, err := GetLastParent(current)
-			if err != nil {
-				return nil, err
-			}
-			return found, nil
+			//found, err := GetLastParent(current)
+			//if err != nil {
+			//	return nil, err
+			//}
+			return current, nil
 		} else {
 			// Other commit (other component, or commit on docker-ce directly)
 			next, err := GetFirstParent(current)
@@ -175,7 +211,7 @@ func (r *Remote) FindLatestCommonAncestor(initialCommit *object.Commit, componen
 	}
 }
 
-func (r *Remote) FindCommitsToCherryPick(initialCommit, finalCommit *object.Commit, component string) ([]*object.Commit, error) {
+func (r *Remote) FindCommitsToCherryPick(initialCommit, finalCommit *object.Commit) ([]*object.Commit, error) {
 	var cherryPicks []*object.Commit
 	current := initialCommit
 	for {
@@ -192,27 +228,23 @@ func (r *Remote) FindCommitsToCherryPick(initialCommit, finalCommit *object.Comm
 				// DO NOTHING
 			} else if strings.Contains(current.Message, "Merge pull request") {
 				// Follow the PR and add all the commits related to component
-				commits, err := getComponentCommitsFromMerge(current, component)
+				commits, err := getComponentCommitsFromMerge(current)
 				if err != nil {
 					return nil, err
 				}
 				cherryPicks = append(cherryPicks, commits...)
 			} else {
 				// Some commit made directly on master, do we need to do something about it?
-				if b, err := isCommitOnComponent(current, component); err == nil && b {
-					cherryPicks = append(cherryPicks, current)
-				}
+				//if b, err := isCommitOnComponent(current, component); err == nil && b {
+				cherryPicks = append(cherryPicks, current)
+				//}
 			}
 			current = next
 		}
 	}
 }
 
-func getComponentCommitsFromMerge(mergeCommit *object.Commit, component string) ([]*object.Commit, error) {
-	if b, err := isCommitOnComponent(mergeCommit, component); err != nil || !b {
-		return nil, err
-	}
-
+func getComponentCommitsFromMerge(mergeCommit *object.Commit) ([]*object.Commit, error) {
 	var commits []*object.Commit
 	current, err := GetLastParent(mergeCommit)
 	if err != nil {
@@ -222,10 +254,7 @@ func getComponentCommitsFromMerge(mergeCommit *object.Commit, component string) 
 		if current.NumParents() > 1 {
 			return commits, nil
 		}
-		// Only add commits related to component
-		if b, err := isCommitOnComponent(current, component); err == nil && b {
-			commits = append(commits, current)
-		}
+		commits = append(commits, current)
 		current, err = GetFirstParent(current)
 		if err != nil {
 			return nil, err

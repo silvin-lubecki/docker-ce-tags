@@ -76,7 +76,7 @@ func FindCommitOnComponent(dockerCe, component *Remote, tagName, componentName s
 		return nil, nil, err
 	}
 
-	// find latest mege commit comming from bot merging component
+	// find latest merge commit comming from bot merging component
 	componentMergeCommit, err := dockerCe.FindLatestCommonAncestor(tag.Commit, componentName)
 	if err != nil {
 		return nil, nil, err
@@ -91,23 +91,24 @@ func FindCommitOnComponent(dockerCe, component *Remote, tagName, componentName s
 	return componentMergeCommit, componentCommit, nil
 }
 
-func CherryPickOnBranch(dockerCe *Remote, branchName, component string) ([]*object.Commit, error) {
+func CherryPickOnBranch(dockerCe *Remote, branchName, component string) ([]*object.Commit, *object.Commit, error) {
 	// First find common ancestor between master branch and targeted branch
 	master, err := dockerCe.GetHead("master")
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	head, err := dockerCe.GetHead(branchName)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	cIter, err := dockerCe.repo.Log(&git.LogOptions{From: head.Hash})
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	var commonAncestor *object.Commit
 	if err := cIter.ForEach(func(c *object.Commit) error {
+		fmt.Println("Checking ancestor with", c.Hash)
 		if b, err := c.IsAncestor(master); err == nil && b {
 			commonAncestor = c
 			fmt.Printf("Ancestor %q found for branch %q\n", c.Hash, branchName)
@@ -115,17 +116,17 @@ func CherryPickOnBranch(dockerCe *Remote, branchName, component string) ([]*obje
 		}
 		return nil
 	}); err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	if commonAncestor == nil {
-		return nil, fmt.Errorf("Could not find a common ancestor between %q and %q", "master", branchName)
+		return nil, nil, fmt.Errorf("Could not find a common ancestor between %q and %q", "master", branchName)
 	}
-	// find all commits made only on DockerCE related to the selected component
-	commits, err := dockerCe.FindCommitsToCherryPick(head, commonAncestor, component)
+	// find all commits made only on DockerCE
+	commits, err := dockerCe.FindCommitsToCherryPick(head, commonAncestor)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	return commits, nil
+	return commits, commonAncestor, nil
 }
 
 func getTag(remote *Remote, tagName string) (Tag, error) {
