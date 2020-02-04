@@ -101,6 +101,9 @@ func (r *Remote) GetHead(branchName string) (*object.Commit, error) {
 	}); err != nil {
 		return nil, err
 	}
+	if branch == nil {
+		return nil, fmt.Errorf("branch %q not found", branchName)
+	}
 	return r.repo.CommitObject(branch.Hash())
 }
 
@@ -187,6 +190,9 @@ func (r *Remote) FindCommitByMessageOnBranch(message string, from plumbing.Hash)
 	}); err != nil {
 		return nil, err
 	}
+	if found == nil {
+		return nil, fmt.Errorf("Couldn't find commit with message %q starting from %q", message, from)
+	}
 	return found, nil
 }
 
@@ -225,7 +231,10 @@ func (r *Remote) FindCommitsToCherryPick(initialCommit, finalCommit *object.Comm
 				return nil, err
 			}
 			if strings.Contains(current.Message, "Merge component") {
-				// DO NOTHING
+				next, err = GetLastParent(current)
+				if err != nil {
+					return nil, err
+				}
 			} else if strings.Contains(current.Message, "Merge pull request") {
 				// Follow the PR and add all the commits related to component
 				commits, err := getComponentCommitsFromMerge(current)
@@ -251,7 +260,7 @@ func getComponentCommitsFromMerge(mergeCommit *object.Commit) ([]*object.Commit,
 		return nil, err
 	}
 	for {
-		if current.NumParents() > 1 {
+		if current.NumParents() > 1 || current.NumParents() == 0 {
 			return commits, nil
 		}
 		commits = append(commits, current)

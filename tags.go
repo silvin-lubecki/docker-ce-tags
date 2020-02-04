@@ -18,7 +18,6 @@ func computeDiffTags(dockerCe, component *Remote) ([]Tag, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	return diffTags(dockerCeTags, componentTags), nil
 }
 
@@ -27,7 +26,7 @@ func diffTags(upstreamTags, componentTags []Tag) []Tag {
 	for _, up := range upstreamTags {
 		found := false
 		for _, comp := range componentTags {
-			if up == comp {
+			if up.Name == comp.Name {
 				found = true
 				break
 			}
