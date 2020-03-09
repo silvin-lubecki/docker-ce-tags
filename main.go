@@ -86,12 +86,12 @@ func main() {
 		// find latest merge commit comming from bot merging component
 		botMergeCommit, err := dockerCe.FindLatestCommonAncestor(ancestor, conf.Component)
 		checkErr(err)
-		componentMergeCommit, err := GetLastParent(botMergeCommit)
+		dockerCEMergeCommit, err := GetLastParent(botMergeCommit)
 		checkErr(err)
 		// clean that message
-		cleanedMessage := CleanCommitMessage(componentMergeCommit.Message)
+		cleanedMessage := CleanCommitMessage(dockerCEMergeCommit.Message)
 		// find that message in the upstream repo
-		componentCommit, err := component.FindCommitByMessage(cleanedMessage)
+		dockerProductCommit, err := component.FindCommitByMessage(cleanedMessage)
 		checkErr(err)
 
 		// Now find the commit in the "git filter-branch" extracted branch on docker-ce
@@ -99,11 +99,11 @@ func main() {
 		//	checkErr(err)
 		fmt.Println("Extracted Head", extractHead.Hash)
 		fmt.Println("Bot Merge commit", botMergeCommit.Hash)
-		fmt.Println("Component Merge Commit", componentMergeCommit)
+		fmt.Println("Component Merge Commit", dockerCEMergeCommit)
 
-		extractedCommit, err := dockerCe.FindCommitByMessageOnBranch(componentMergeCommit.Message, extractHead.Hash)
+		extractedCommit, err := dockerCe.FindCommitByMessageOnBranch(dockerCEMergeCommit.Message, extractHead.Hash)
 		if err != nil {
-			parent, err := GetLastParent(componentMergeCommit)
+			parent, err := GetLastParent(dockerCEMergeCommit)
 			checkErr(err)
 			extractedCommit, err = dockerCe.FindCommitByMessageOnBranch(parent.Message, extractHead.Hash)
 		}
@@ -112,7 +112,7 @@ func main() {
 
 		//fmt.Println("******** Extracted Commit Ancestor")
 		//fmt.Println(extractedCommit)
-		fmt.Printf("git checkout -b %s-extract-%s %s\n", conf.Branch, conf.Component, componentCommit.Hash)
+		fmt.Printf("git checkout -b %s-extract-%s %s\n", conf.Branch, conf.Component, dockerProductCommit.Hash)
 
 		cherryPicked, err := dockerCe.FindCommitsToCherryPick(extractHead, extractedCommit)
 		checkErr(err)
