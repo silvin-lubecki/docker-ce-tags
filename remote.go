@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
+	"os/exec"
 	"strings"
 
 	"gopkg.in/src-d/go-git.v4/plumbing"
@@ -217,40 +219,16 @@ func (r *Remote) FindLatestCommonAncestor(initialCommit *object.Commit, componen
 	}
 }
 
-func (r *Remote) FindCommitsToCherryPick(initialCommit, finalCommit *object.Commit) ([]*object.Commit, error) {
-	var cherryPicks []*object.Commit
-	current := initialCommit
-	for {
-		// We reached the previous tag, we can quit
-		if current.Hash == finalCommit.Hash {
-			return deduplicate(cherryPicks), nil
-		} else {
-			// Other commit (other component, or commit on docker-ce directly)
-			next, err := GetFirstParent(current)
-			if err != nil {
-				return nil, err
-			}
-			if strings.Contains(current.Message, "Merge component") {
-				next, err = GetLastParent(current)
-				if err != nil {
-					return nil, err
-				}
-			} else if strings.Contains(current.Message, "Merge pull request") {
-				// Follow the PR and add all the commits related to component
-				commits, err := getComponentCommitsFromMerge(current)
-				if err != nil {
-					return nil, err
-				}
-				cherryPicks = append(cherryPicks, commits...)
-			} else {
-				// Some commit made directly on master, do we need to do something about it?
-				//if b, err := isCommitOnComponent(current, component); err == nil && b {
-				cherryPicks = append(cherryPicks, current)
-				//}
-			}
-			current = next
-		}
+func (r *Remote) FindCommitsToCherryPick(initialCommit, finalCommit *object.Commit) ([]string, error) {
+	current := fmt.Sprintf("%s..HEAD",initialCommit.Hash)
+	cmd := exec.Command("git","log", "--format=format:%H", current)
+	buff := bytes.NewBuffer(nil)
+	cmd.Stdout = buff
+	err:= cmd.Run()
+	if err != nil {
+	    return nil, err
 	}
+	return strings.Split(buff.String(), "\n"), nil
 }
 
 func getComponentCommitsFromMerge(mergeCommit *object.Commit) ([]*object.Commit, error) {
