@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"fmt"
+	"os"
 	"os/exec"
 	"strings"
 
@@ -61,6 +62,29 @@ func (r *Remote) GetCommits(reference string) ([]*object.Commit, error) {
 		return nil, err
 	}
 	return commits, nil
+}
+
+func (r *Remote) GetCommit(hash, refName string) (*object.Commit, error) {
+	ref, err := r.FindReference(refName)
+
+	if err != nil {
+		return nil, err
+	}
+	cIter, err := r.repo.Log(&git.LogOptions{From: ref.Hash()})
+	if err != nil {
+		return nil, err
+	}
+	var commit *object.Commit
+	if err := cIter.ForEach(func(c *object.Commit) error {
+		if c.Hash.String() == hash {
+			commit = c
+			return storer.ErrStop
+		}
+		return nil
+	}); err != nil {
+		return nil, err
+	}
+	return commit, nil
 }
 
 func (r *Remote) GetCommitsFromHash(h plumbing.Hash) ([]*object.Commit, error) {
@@ -220,13 +244,16 @@ func (r *Remote) FindLatestCommonAncestor(initialCommit *object.Commit, componen
 }
 
 func (r *Remote) FindCommitsToCherryPick(initialCommit, finalCommit *object.Commit) ([]string, error) {
-	current := fmt.Sprintf("%s..HEAD",initialCommit.Hash)
-	cmd := exec.Command("git","log", "--format=format:%H", current)
+	current := fmt.Sprintf("%s..HEAD", finalCommit.Hash)
+	cmd := exec.Command("git", "log", "--format=format:%H", current)
+	fmt.Println("running git", cmd.Args)
+	cmd.Stderr = os.Stderr
+	cmd.Dir = "/Users/silvin/dev/go/src/github.com/docker/docker-ce-extract/docker-ce"
 	buff := bytes.NewBuffer(nil)
 	cmd.Stdout = buff
-	err:= cmd.Run()
+	err := cmd.Run()
 	if err != nil {
-	    return nil, err
+		return nil, err
 	}
 	return strings.Split(buff.String(), "\n"), nil
 }

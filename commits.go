@@ -91,20 +91,20 @@ func FindCommitOnComponent(dockerCe, component *Remote, tagName, componentName s
 	return componentMergeCommit, componentCommit, nil
 }
 
-func CherryPickOnBranch(dockerCe *Remote, branchName, component string) ([]*object.Commit, *object.Commit, error) {
+func CherryPickOnBranch(dockerCe *Remote, branchName, component string) (*object.Commit, error) {
 	// First find common ancestor between master branch and targeted branch
 	master, err := dockerCe.GetHead("master")
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 	head, err := dockerCe.GetHead(branchName)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
 	cIter, err := dockerCe.repo.Log(&git.LogOptions{From: head.Hash})
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 	var commonAncestor *object.Commit
 	if err := cIter.ForEach(func(c *object.Commit) error {
@@ -116,17 +116,18 @@ func CherryPickOnBranch(dockerCe *Remote, branchName, component string) ([]*obje
 		}
 		return nil
 	}); err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 	if commonAncestor == nil {
-		return nil, nil, fmt.Errorf("Could not find a common ancestor between %q and %q", "master", branchName)
+		return nil, fmt.Errorf("Could not find a common ancestor between %q and %q", "master", branchName)
 	}
 	// find all commits made only on DockerCE
-	commits, err := dockerCe.FindCommitsToCherryPick(head, commonAncestor)
-	if err != nil {
-		return nil, nil, err
-	}
-	return commits, commonAncestor, nil
+	// commits, err := dockerCe.FindCommitsToCherryPick(head, commonAncestor)
+	// if err != nil {
+	// 	fmt.Println("error in FindCommitsToCherryPick", err)
+	// 	return nil, nil, err
+	// }
+	return commonAncestor, nil
 }
 
 func getTag(remote *Remote, tagName string) (Tag, error) {

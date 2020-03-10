@@ -72,8 +72,15 @@ func main() {
 		extractHead, err := dockerCe.GetHead(conf.Branch + "-extract")
 		checkErr(err)
 
-		_, ancestor, err := CherryPickOnBranch(dockerCe, conf.Branch, conf.Component)
-		checkErr(err)
+		var ancestor *object.Commit
+		if conf.Ancestor != "" {
+			ancestor, err = dockerCe.GetCommit(conf.Ancestor, "master")
+			checkErr(err)
+		} else {
+			ancestor, err = CherryPickOnBranch(dockerCe, conf.Branch, conf.Component)
+			checkErr(err)
+		}
+		fmt.Println("Ancestor", ancestor.Hash)
 		//fmt.Println("Branch", conf.Branch)
 		//fmt.Println("Commits to cherry pick")
 		//for _, c := range cherryPicked {
@@ -86,14 +93,17 @@ func main() {
 		// find latest merge commit comming from bot merging component
 		botMergeCommit, err := dockerCe.FindLatestCommonAncestor(ancestor, conf.Component)
 		checkErr(err)
+		fmt.Println("botMergeCommit", botMergeCommit.Hash)
 		dockerCEMergeCommit, err := GetLastParent(botMergeCommit)
 		checkErr(err)
+		fmt.Println("dockerCEMergeCommit", dockerCEMergeCommit.Hash)
+
 		// clean that message
 		cleanedMessage := CleanCommitMessage(dockerCEMergeCommit.Message)
 		// find that message in the upstream repo
 		dockerProductCommit, err := component.FindCommitByMessage(cleanedMessage)
 		checkErr(err)
-
+		fmt.Println("dockerProductCommit", dockerProductCommit.Hash)
 		// Now find the commit in the "git filter-branch" extracted branch on docker-ce
 		//extractHead, err := dockerCe.GetHead(conf.Branch + "-extract")
 		//	checkErr(err)
@@ -128,7 +138,7 @@ func main() {
 			// 	checkErr(err)
 			// }
 			// fmt.Println(c.Hash, found.Hash)
-			fmt.Fprintln(f, c.Hash)
+			fmt.Fprintln(f, c)
 		}
 
 	case "all-tags":

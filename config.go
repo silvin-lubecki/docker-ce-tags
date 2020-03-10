@@ -14,6 +14,7 @@ type Config struct {
 	ComponentResultRemote string `yaml:"ComponentResultRemote"`
 	Branch                string `yaml:"Branch"`
 	Component             string `yaml:"Component"`
+	Ancestor              string `yaml:"Ancestor"`
 }
 
 func loadConfig(path string) Config {

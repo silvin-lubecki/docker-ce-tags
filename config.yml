@@ -1,7 +1,8 @@
 UpstreamPath: /Users/silvin/dev/go/src/github.com/docker/docker-ce-extract/docker-ce
 UpstreamRemote: docker/docker-ce
-ComponentPath: /Users/silvin/dev/go/src/github.com/docker/docker-ce-packaging
-ComponentRemote: docker/docker-ce-packaging
-ComponentResultRemote: silvin-lubecki/packaging-extract
-Component: packaging
-Branch: 18.03
+ComponentPath: /Users/silvin/dev/go/src/github.com/docker/engine
+ComponentRemote: docker/engine
+ComponentResultRemote: silvin-lubecki/engine-extract
+Component: engine
+Branch: 17.06
+Ancestor: 3faf0eaaca8e30214721a02fd975f16ab2ba06c5
