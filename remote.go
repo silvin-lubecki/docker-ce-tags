@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"fmt"
+	"os"
 	"os/exec"
 	"strings"
 
@@ -61,6 +62,29 @@ func (r *Remote) GetCommits(reference string) ([]*object.Commit, error) {
 		return nil, err
 	}
 	return commits, nil
+}
+
+func (r *Remote) GetCommit(hash, refName string) (*object.Commit, error) {
+	ref, err := r.FindReference(refName)
+
+	if err != nil {
+		return nil, err
+	}
+	cIter, err := r.repo.Log(&git.LogOptions{From: ref.Hash()})
+	if err != nil {
+		return nil, err
+	}
+	var commit *object.Commit
+	if err := cIter.ForEach(func(c *object.Commit) error {
+		if c.Hash.String() == hash {
+			commit = c
+			return storer.ErrStop
+		}
+		return nil
+	}); err != nil {
+		return nil, err
+	}
+	return commit, nil
 }
 
 func (r *Remote) GetCommitsFromHash(h plumbing.Hash) ([]*object.Commit, error) {
@@ -160,7 +184,7 @@ func (r *Remote) GetTagFromRef(ref *plumbing.Reference) (Tag, error) {
 }
 
 func (r *Remote) FindCommitByMessage(message string) (*object.Commit, error) {
-	cIter, err := r.repo.Log(&git.LogOptions{All: true})
+	cIter, err := r.repo.Log(&git.LogOptions{All: true, Order: git.LogOrderCommitterTime})
 	if err != nil {
 		return nil, err
 	}
@@ -219,14 +243,41 @@ func (r *Remote) FindLatestCommonAncestor(initialCommit *object.Commit, componen
 	}
 }
 
+func (r *Remote) FindComponentCommit(initialCommit *object.Commit, component string) (*object.Commit, error) {
+	cIter, err := r.repo.Log(&git.LogOptions{From: initialCommit.Hash, Order: git.LogOrderCommitterTime})
+	if err != nil {
+		return nil, err
+	}
+	var found *object.Commit
+	if err := cIter.ForEach(func(c *object.Commit) error {
+		if strings.HasPrefix(c.Message, "Merge pull request") || strings.HasPrefix(c.Message, fmt.Sprintf("Merge component %s", component)) {
+			return nil
+		}
+		if b, err := isCommitOnComponent(c, component); b && err == nil {
+			found = c
+			return storer.ErrStop
+		}
+		return nil
+	}); err != nil {
+		return nil, err
+	}
+	if found == nil {
+		return nil, fmt.Errorf("Couldn't find commit %q", initialCommit.Hash)
+	}
+	return found, nil
+}
+
 func (r *Remote) FindCommitsToCherryPick(initialCommit, finalCommit *object.Commit) ([]string, error) {
-	current := fmt.Sprintf("%s..HEAD",initialCommit.Hash)
-	cmd := exec.Command("git","log", "--format=format:%H", current)
+	current := fmt.Sprintf("%s..HEAD", finalCommit.Hash)
+	cmd := exec.Command("git", "log", "--format=format:%H", current)
+	fmt.Println("running git", cmd.Args)
+	cmd.Stderr = os.Stderr
+	cmd.Dir = "/Users/silvin/dev/go/src/github.com/docker/docker-ce-extract/docker-ce"
 	buff := bytes.NewBuffer(nil)
 	cmd.Stdout = buff
-	err:= cmd.Run()
+	err := cmd.Run()
 	if err != nil {
-	    return nil, err
+		return nil, err
 	}
 	return strings.Split(buff.String(), "\n"), nil
 }
