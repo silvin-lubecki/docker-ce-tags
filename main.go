@@ -26,7 +26,7 @@ func main() {
 	checkErr(err)
 	component, err := NewRemote(conf.ComponentPath, conf.ComponentRemote)
 	checkErr(err)
-	result, err := NewRemote("/Users/silvin/dev/go/src/github.com/silvin-lubecki/packaging-extract", "silvin-lubecki/packaging-extract")
+	result, err := NewRemote("/Users/silvin/dev/go/src/github.com/silvin-lubecki/engine-extract", "silvin-lubecki/engine-extract")
 	checkErr(err)
 
 	switch os.Args[1] {
@@ -146,7 +146,7 @@ func main() {
 		checkErr(err)
 		for _, tag := range tags {
 			fmt.Println("Checking", tag.Name)
-			dockerCeCommit, componentCommit, err := FindCommitOnComponent(dockerCe, component, tag.Name, conf.Component)
+			dockerCeCommit, componentCommit, err := FindCommitOnComponent(dockerCe, result, tag.Name, conf.Component)
 			checkErr(err)
 			if dockerCeCommit == nil || componentCommit == nil {
 				checkErr(fmt.Errorf("%q failed to get commits", tag.Name))

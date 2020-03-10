@@ -77,7 +77,7 @@ func FindCommitOnComponent(dockerCe, component *Remote, tagName, componentName s
 	}
 
 	// find latest merge commit comming from bot merging component
-	componentMergeCommit, err := dockerCe.FindLatestCommonAncestor(tag.Commit, componentName)
+	componentMergeCommit, err := dockerCe.FindComponentCommit(tag.Commit, componentName)
 	if err != nil {
 		return nil, nil, err
 	}

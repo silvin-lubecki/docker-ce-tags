@@ -15,6 +15,7 @@ type Config struct {
 	Branch                string `yaml:"Branch"`
 	Component             string `yaml:"Component"`
 	Ancestor              string `yaml:"Ancestor"`
+	ExtractedComponent    string `yaml:"ExtractedComponent"`
 }
 
 func loadConfig(path string) Config {

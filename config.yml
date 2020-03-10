@@ -6,3 +6,4 @@ ComponentResultRemote: silvin-lubecki/engine-extract
 Component: engine
 Branch: 17.06
 Ancestor: 3faf0eaaca8e30214721a02fd975f16ab2ba06c5
+ExtractedComponent: /Users/silvin/dev/go/src/github.com/silvin-lubecki/engine-extract
