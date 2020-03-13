@@ -37,39 +37,19 @@ func main() {
 			fmt.Printf("| %s | ", tag.Name)
 			branchName := fmt.Sprintf("%s-extract-%s", tag.Name[1:6], conf.Component)
 			branch, err := result.GetHead(branchName)
-			if err != nil {
-				branchName := tag.Name[1:6]
-				branch, err = result.GetHead(branchName)
-				checkErr(err)
-			}
-			var commit *object.Commit
-			for commit == nil {
-				c := tag.Commit
-				if strings.HasPrefix(c.Message, "Merge pull request") {
-					c, err = GetLastParent(c)
-					checkErr(err)
-				} else if strings.HasPrefix(c.Message, "Merge component '"+conf.Component) {
-					c, err = GetLastParent(c)
-					checkErr(err)
-					c.Message = CleanCommitMessage(c.Message)
-				}
-				m := c.Message
-				if len(m) >= 25 {
-					m = m[:25]
-					m = strings.ReplaceAll(m, "\n", "")
-				}
-				commit, err = result.FindCommitByMessageOnBranch(c.Message, branch.Hash)
-				if commit == nil {
-					c, err := GetFirstParent(tag.Commit)
-					checkErr(err)
-					tag.Commit = c
-				}
-			}
-			fmt.Println(tag.Commit.Hash, "|", commit.Hash, "|")
+			checkErr(err)
+			componentCommit, err := dockerCe.FindComponentCommit(tag.Commit, conf.Component)
+			checkErr(err)
+			commit, err := result.FindCommitByMessageStartByBranch(branch.Hash, CleanCommitMessage(componentCommit.Message))
+			checkErr(err)
+
+			fmt.Println("TAG ", tag.Commit.Hash, "| COMMIT FOUND", commit.Hash, "|")
+			fmt.Println("BRANCH COMMIT ", branch.Hash)
+			fmt.Println("COMPONENT COMMIT ", componentCommit.Hash)
 		}
 
 	case "branch":
-		extractHead, err := dockerCe.GetHead(conf.Branch + "-extract")
+		extractHead, err := dockerCe.GetHead(conf.Branch + "-extract-" + conf.Component)
 		checkErr(err)
 
 		var ancestor *object.Commit
@@ -122,7 +102,7 @@ func main() {
 
 		//fmt.Println("******** Extracted Commit Ancestor")
 		//fmt.Println(extractedCommit)
-		fmt.Printf("git checkout -b %s-extract-%s %s\n", conf.Branch, conf.Component, dockerProductCommit.Hash)
+		fmt.Printf("git switch -c %s-extract-%s %s\n", conf.Branch, conf.Component, dockerProductCommit.Hash)
 
 		cherryPicked, err := dockerCe.FindCommitsToCherryPick(extractHead, extractedCommit)
 		checkErr(err)

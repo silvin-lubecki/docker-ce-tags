@@ -201,6 +201,25 @@ func (r *Remote) FindCommitByMessage(message string) (*object.Commit, error) {
 	return found, nil
 }
 
+func (r *Remote) FindCommitByMessageStartByBranch(originalHash plumbing.Hash, message string) (*object.Commit, error) {
+	cIter, err := r.repo.Log(&git.LogOptions{From: originalHash, Order: git.LogOrderCommitterTime})
+	if err != nil {
+		return nil, err
+	}
+	var found *object.Commit
+	if err := cIter.ForEach(func(c *object.Commit) error {
+		fmt.Println(c.Hash)
+		if strings.HasPrefix(c.Message, message) {
+			found = c
+			return storer.ErrStop
+		}
+		return nil
+	}); err != nil {
+		return nil, err
+	}
+	return found, nil
+}
+
 func (r *Remote) FindCommitByMessageOnBranch(message string, from plumbing.Hash) (*object.Commit, error) {
 	cIter, err := r.repo.Log(&git.LogOptions{From: from})
 	if err != nil {
