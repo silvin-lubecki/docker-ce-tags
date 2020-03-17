@@ -1,7 +1,10 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
+	"os"
+	"os/exec"
 	"strings"
 
 	"gopkg.in/src-d/go-git.v4/plumbing"
@@ -284,21 +287,18 @@ func (r *Remote) FindComponentCommit(initialCommit *object.Commit, component str
 }
 
 func (r *Remote) FindCommitsToCherryPick(initialCommit, finalCommit *object.Commit) ([]string, error) {
-	cIter, err := r.repo.Log(&git.LogOptions{From: initialCommit.Hash, Order: git.LogOrderCommitterTime})
+	current := fmt.Sprintf("%s..HEAD", finalCommit.Hash)
+	cmd := exec.Command("git", "log", "--format=format:%H", current)
+	fmt.Println("running git", cmd.Args)
+	cmd.Stderr = os.Stderr
+	cmd.Dir = "/Users/silvin/dev/go/src/github.com/docker/docker-ce-extract/docker-ce"
+	buff := bytes.NewBuffer(nil)
+	cmd.Stdout = buff
+	err := cmd.Run()
 	if err != nil {
 		return nil, err
 	}
-	var commits []string
-	if err := cIter.ForEach(func(c *object.Commit) error {
-		commits = append(commits, c.Hash.String())
-		if c.Hash.String() == finalCommit.Hash.String() {
-			return storer.ErrStop
-		}
-		return nil
-	}); err != nil {
-		return nil, err
-	}
-	return commits, nil
+	return strings.Split(buff.String(), "\n"), nil
 }
 
 func getComponentCommitsFromMerge(mergeCommit *object.Commit) ([]*object.Commit, error) {
