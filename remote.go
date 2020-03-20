@@ -201,23 +201,56 @@ func (r *Remote) FindCommitByMessage(message string) (*object.Commit, error) {
 	return found, nil
 }
 
-func (r *Remote) FindCommitByMessageStartByBranch(originalHash plumbing.Hash, message string) (*object.Commit, error) {
-	cIter, err := r.repo.Log(&git.LogOptions{From: originalHash, Order: git.LogOrderCommitterTime})
+func (r *Remote) FindCommitByMessageStartByBranch(originalHash plumbing.Hash, dir, branch, message string) (*object.Commit, error) {
+	commits, err := r.GitLogTopoOrder(dir, branch, "", true)
 	if err != nil {
 		return nil, err
 	}
-	var found *object.Commit
-	if err := cIter.ForEach(func(c *object.Commit) error {
-		fmt.Println(c.Hash)
+
+	for _, c := range commits {
+		//fmt.Println(c.Hash)
 		if strings.HasPrefix(c.Message, message) {
-			found = c
-			return storer.ErrStop
+			return c, nil
 		}
-		return nil
-	}); err != nil {
+	}
+	return nil, fmt.Errorf("message %q not found on branch %q", message, branch)
+}
+
+func (r *Remote) GitLogTopoOrder(dir, branch, fromCommit string, nomerge bool) ([]*object.Commit, error) {
+	// Checkout the branch
+	cmd := exec.Command("git", "checkout", branch)
+	//cmd.Stderr = os.Stderr
+	cmd.Dir = dir
+	if err := cmd.Run(); err != nil {
 		return nil, err
 	}
-	return found, nil
+	// git log topo order
+	cmd2 := exec.Command("git", "log", "--topo-order", "--format=format:%H")
+	if nomerge {
+		cmd2.Args = append(cmd2.Args, "--no-merges")
+	}
+	if fromCommit != "" {
+		cmd2.Args = append(cmd2.Args, fmt.Sprintf("%s..HEAD", fromCommit))
+	}
+	//fmt.Println("running git", cmd2.Args)
+	//cmd2.Stderr = os.Stderr
+	cmd2.Dir = dir
+	buff := bytes.NewBuffer(nil)
+	cmd2.Stdout = buff
+	if err := cmd2.Run(); err != nil {
+		return nil, err
+	}
+	hashes := strings.Split(buff.String(), "\n")
+	var commits []*object.Commit
+	for _, h := range hashes {
+		commitHash := plumbing.NewHash(h)
+		commit, err := r.repo.CommitObject(commitHash)
+		if err != nil {
+			return nil, fmt.Errorf("commit %q: %s", h, err)
+		}
+		commits = append(commits, commit)
+	}
+	return commits, nil
 }
 
 func (r *Remote) FindCommitByMessageOnBranch(message string, from plumbing.Hash) (*object.Commit, error) {
@@ -262,33 +295,32 @@ func (r *Remote) FindLatestCommonAncestor(initialCommit *object.Commit, componen
 	}
 }
 
-func (r *Remote) FindComponentCommit(initialCommit *object.Commit, component string) (*object.Commit, error) {
-	cIter, err := r.repo.Log(&git.LogOptions{From: initialCommit.Hash, Order: git.LogOrderCommitterTime})
+func (r *Remote) FindComponentCommit(dir, branch string, initialCommit *object.Commit, component string) (*object.Commit, error) {
+	commits, err := r.GitLogTopoOrder(dir, branch, "", false)
 	if err != nil {
 		return nil, err
 	}
-	var found *object.Commit
-	if err := cIter.ForEach(func(c *object.Commit) error {
-		if strings.HasPrefix(c.Message, "Merge pull request") || strings.HasPrefix(c.Message, fmt.Sprintf("Merge component %s", component)) {
-			return nil
+	started := false
+	for _, c := range commits {
+		if c.Hash == initialCommit.Hash {
+			started = true
+		}
+		if !started {
+			continue
+		}
+		if strings.HasPrefix(c.Message, "Merge pull request") || strings.HasPrefix(c.Message, fmt.Sprintf("Merge component '%s'", component)) {
+			continue
 		}
 		if b, err := isCommitOnComponent(c, component); b && err == nil {
-			found = c
-			return storer.ErrStop
+			return c, nil
 		}
-		return nil
-	}); err != nil {
-		return nil, err
 	}
-	if found == nil {
-		return nil, fmt.Errorf("Couldn't find commit %q", initialCommit.Hash)
-	}
-	return found, nil
+	return nil, fmt.Errorf("Couldn't find commit %q", initialCommit.Hash)
 }
 
 func (r *Remote) FindCommitsToCherryPick(initialCommit, finalCommit *object.Commit) ([]string, error) {
 	current := fmt.Sprintf("%s..HEAD", finalCommit.Hash)
-	cmd := exec.Command("git", "log", "--format=format:%H", current)
+	cmd := exec.Command("git", "log", "--topo-order", "--no-merges", "--format=format:%H", current)
 	fmt.Println("running git", cmd.Args)
 	cmd.Stderr = os.Stderr
 	cmd.Dir = "/Users/silvin/dev/go/src/github.com/docker/docker-ce-extract/docker-ce"

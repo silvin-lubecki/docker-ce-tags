@@ -1,188 +1,181 @@
 #!/bin/sh
 
-function check() {
-    docker run --rm slubecki/check-extract:tag $1 $2 $3
-}
-
 # Engine
-check engine v17.06.0-ce bda340abf16b691feac794480cbcce2c711f31fc
-check engine v17.06.0-ce-rc1 3240dfbec53923d05f4b07a9212178a63c3fdd3a
-check engine v17.06.0-ce-rc2 85a3b3402b0c621474a37856c48a0140ac4e3115
-check engine v17.06.0-ce-rc3 e0969deefba15c4ca436b27b569b16e1f96b31b2
-check engine v17.06.0-ce-rc4 d9437def7d61380e32514e00bf0b5c89b1745a7e
-check engine v17.06.0-ce-rc5 84c2adb399a82eb1d9bb6bc1fe98dc499bf38476
-check engine v17.06.1-ce 81f63391e481db17028122f3bbca6271a57c0e8d
-check engine v17.06.1-ce-rc1 7b33830d6e26e863520dc6fba5103f44b6316ec4
-check engine v17.06.1-ce-rc2 5d71d08d0f2f5c5261c2bf76127882b848710cad
-check engine v17.06.1-ce-rc3 b3f242d00082b3dae096eb7aecfb9fe566ec5614
-check engine v17.06.1-ce-rc4 8e1f2c3fd970aec9a7243d45cf51fcf444a9ffc3
-check engine v17.06.2-ce eed47e15052b7edba92122459faf9c28cabeb2c1
-check engine v17.06.2-ce-rc1 e36a7624e748b6b5b80b8227d33992de9f46e79e
-check engine v17.07.0-ce 6e7a9e1d30ca3715a22842f9320cf82662d43203
-check engine v17.07.0-ce-rc1 5a521cfa48a54a68443cb1c0790e2b0a682628bd
-check engine v17.07.0-ce-rc2 562b165bc9e43350253422a4d960fcf24b9f19b4
-check engine v17.07.0-ce-rc3 1062b84197aa7bd6b8e99ecc7aee5d5b5e9e8929
-check engine v17.07.0-ce-rc4 73dd43eb19bdd6102867f505f7a40704727acae8
-check engine v17.09.0-ce 25824859cf8bfebd2ec6f94c619ec40593daf5af
-check engine v17.09.0-ce-rc1 f903137ce1ecab819afe4df0eb258f53793ef874
-check engine v17.09.0-ce-rc2 13bfc729718ea6ee1232f0c8bfc0ef7ed6cb55ba
-check engine v17.09.0-ce-rc3 86925fd03ed36ae21470e7c2d3596b5fdc93bee9
-check engine v17.09.1-ce a2f00c813c52f45fa856d3711e8023a981630b40
-check engine v17.09.1-ce-rc1 987ccc166c44a5710073ea022553de824f0ce4a2
-check engine v17.10.0-ce de0545be0b5d4c3870d98c3df01a94ac484cd947
-check engine v17.10.0-ce-rc1 8db75cb6f4bd361a1526fb10c4310b7d79648ca9
-check engine v17.10.0-ce-rc2 65fd4bcd513008cd6f735687eafbaa008c98d6ec
-check engine v17.11.0-ce dfe625f3b8a8bdb2243d386fbe8a15bb34364005
-check engine v17.11.0-ce-rc1 fb9040837db666308ee4b111168fc5f119bfc09f
-check engine v17.11.0-ce-rc2 356f701725de652f213e57cd58129cdbbd8dfa46
-check engine v17.11.0-ce-rc3 0d5c4e2727aeee3081f23a64bbbbf45cc2734747
-check engine v17.11.0-ce-rc4 253d452fc30ac3221aa206ed89e1be5433eb2f6b
-check engine v17.12.0-ce 8315e9587e12dacabaa5e6dccdb5426f1166485d
-check engine v17.12.0-ce-rc1 a023a599913439f0a08adffc3f242ce187fd8bdd
-check engine v17.12.0-ce-rc2 dd807791ff13616681943c4d9cf171e5f528cb8c
-check engine v17.12.0-ce-rc3 dcf817bf2b9f78f0b264398285dae90587e34a14
-check engine v17.12.0-ce-rc4 8315e9587e12dacabaa5e6dccdb5426f1166485d
-check engine v17.12.1-ce 08bfa1cff3927e4209b8a1e738138b5709534eaa
-check engine v17.12.1-ce-rc1 21968c29642a95a4508def6f8b3729384332ec1d
-check engine v17.12.1-ce-rc2 08bfa1cff3927e4209b8a1e738138b5709534eaa
-check engine v18.01.0-ce 7e3cce37eda990f9eec184890647dd40d9a1c074
-check engine v18.01.0-ce-rc1 7e3cce37eda990f9eec184890647dd40d9a1c074
-check engine v18.02.0-ce 84e6b4c6799262cfb860da0c9eb767c016ea23f5
-check engine v18.02.0-ce-rc1 f20708bda0a803d1b4cf3b1a34f13617109cbb47
-check engine v18.02.0-ce-rc2 84e6b4c6799262cfb860da0c9eb767c016ea23f5
-check engine v18.03.0-ce feb479ed66340f7016f4e5de5ec2741dafe97e91
-check engine v18.03.0-ce-rc1 c85afd025323d817254f3d678128b6ec37ae7158
-check engine v18.03.0-ce-rc2 aba2685ee0104c71c65037f644df3406cf4daabf
-check engine v18.03.0-ce-rc3 09ddb49879eaa1dab68aef6a4f5f508732d8fa72
-check engine v18.03.0-ce-rc4 feb479ed66340f7016f4e5de5ec2741dafe97e91
-check engine v18.03.1-ce d38a8fd8dc8bb9a09ae3b6304104f531cfbc1c1a
-check engine v18.03.1-ce-rc1 c5cdf5c787fd229e5df079ccce11c898081568ca
-check engine v18.03.1-ce-rc2 2ff4e313c7ff61c60c7c4f6eee4b1903b7111a59
-check engine v18.04.0-ce 8f305b11fe8073f98bac80bf796bc97f8501ca9b
-check engine v18.04.0-ce-rc1 ed7b6428c133e7c59404251a09b7d6b02fa83cc2
-check engine v18.04.0-ce-rc2 8f305b11fe8073f98bac80bf796bc97f8501ca9b
-check engine v18.05.0-ce 05fb243667d76c6861130979f719ee2d1a810ab9
-check engine v18.05.0-ce-rc1 05fb243667d76c6861130979f719ee2d1a810ab9
-check engine v18.09.9-beta1 abda7e1227ba45584a6abbf6fbc07e31f970380f
+docker run --rm gloursdocker/commetuveux:tags packaging v17.06.0-ce 20dd390d113652a27a3dd950513abc2c0b728621
+docker run --rm gloursdocker/commetuveux:tags packaging v17.06.0-ce-rc1 95ce3494e7efe28c697fd8d531a8e775ecca32a8
+docker run --rm gloursdocker/commetuveux:tags packaging v17.06.0-ce-rc2 74daf2059565e8172ea23e4cedbee3d085451d03
+docker run --rm gloursdocker/commetuveux:tags packaging v17.06.0-ce-rc3 74daf2059565e8172ea23e4cedbee3d085451d03
+docker run --rm gloursdocker/commetuveux:tags packaging v17.06.0-ce-rc4 adb3a7646e7261c3ecf7cb57951c3baa76b6d7f7
+docker run --rm gloursdocker/commetuveux:tags packaging v17.06.0-ce-rc5 803a56348ae2a20a30b5dead95cf4105e10a2b1d
+docker run --rm gloursdocker/commetuveux:tags packaging v17.06.1-ce 3ae051f908726289d7f354958613e20f52fcd136
+docker run --rm gloursdocker/commetuveux:tags packaging v17.06.1-ce-rc1 9100475a3319453e76d9e320de3e22e940091629
+docker run --rm gloursdocker/commetuveux:tags packaging v17.06.1-ce-rc2 9100475a3319453e76d9e320de3e22e940091629
+docker run --rm gloursdocker/commetuveux:tags packaging v17.06.1-ce-rc3 3ae051f908726289d7f354958613e20f52fcd136
+docker run --rm gloursdocker/commetuveux:tags packaging v17.06.1-ce-rc4 3ae051f908726289d7f354958613e20f52fcd136
+docker run --rm gloursdocker/commetuveux:tags packaging v17.06.2-ce 3ae051f908726289d7f354958613e20f52fcd136
+docker run --rm gloursdocker/commetuveux:tags packaging v17.06.2-ce-rc1 3ae051f908726289d7f354958613e20f52fcd136
+docker run --rm gloursdocker/commetuveux:tags packaging v17.07.0-ce 5dfe6d05e16ab55e17e50797410884cf2c912e47
+docker run --rm gloursdocker/commetuveux:tags packaging v17.07.0-ce-rc1 5dfe6d05e16ab55e17e50797410884cf2c912e47
+docker run --rm gloursdocker/commetuveux:tags packaging v17.07.0-ce-rc2 5dfe6d05e16ab55e17e50797410884cf2c912e47
+docker run --rm gloursdocker/commetuveux:tags packaging v17.07.0-ce-rc3 5dfe6d05e16ab55e17e50797410884cf2c912e47
+docker run --rm gloursdocker/commetuveux:tags packaging v17.07.0-ce-rc4 5dfe6d05e16ab55e17e50797410884cf2c912e47
+docker run --rm gloursdocker/commetuveux:tags packaging v17.09.0-ce 895abef8259363895fda4587f5a157f588608234
+docker run --rm gloursdocker/commetuveux:tags packaging v17.09.0-ce-rc1 895abef8259363895fda4587f5a157f588608234
+docker run --rm gloursdocker/commetuveux:tags packaging v17.09.0-ce-rc2 895abef8259363895fda4587f5a157f588608234
+docker run --rm gloursdocker/commetuveux:tags packaging v17.09.0-ce-rc3 895abef8259363895fda4587f5a157f588608234
+docker run --rm gloursdocker/commetuveux:tags packaging v17.09.1-ce 895abef8259363895fda4587f5a157f588608234
+docker run --rm gloursdocker/commetuveux:tags packaging v17.09.1-ce-rc1 895abef8259363895fda4587f5a157f588608234
+docker run --rm gloursdocker/commetuveux:tags packaging v17.10.0-ce cc69a6c3f179c0550523bbf54dddd11365ecb916
+docker run --rm gloursdocker/commetuveux:tags packaging v17.10.0-ce-rc1 cc436770b773767ad59e766be66323282b030d33
+docker run --rm gloursdocker/commetuveux:tags packaging v17.10.0-ce-rc2 cc69a6c3f179c0550523bbf54dddd11365ecb916
+docker run --rm gloursdocker/commetuveux:tags packaging v17.11.0-ce d22116732a1373d262dad9b47ba9b8f15266cd8a
+docker run --rm gloursdocker/commetuveux:tags packaging v17.11.0-ce-rc1 8e177368d0a30614a7ba615f3c2f2ede1e21ff8e
+docker run --rm gloursdocker/commetuveux:tags packaging v17.11.0-ce-rc2 d22116732a1373d262dad9b47ba9b8f15266cd8a
+docker run --rm gloursdocker/commetuveux:tags packaging v17.11.0-ce-rc3 d22116732a1373d262dad9b47ba9b8f15266cd8a
+docker run --rm gloursdocker/commetuveux:tags packaging v17.11.0-ce-rc4 d22116732a1373d262dad9b47ba9b8f15266cd8a
+docker run --rm gloursdocker/commetuveux:tags packaging v17.12.0-ce 60c0887ba5351ae61b49a14d025935c2ba099da6
+docker run --rm gloursdocker/commetuveux:tags packaging v17.12.0-ce-rc1 4d8e8855d1008f4705ea6db17e5cd5bc90bd2d81
+docker run --rm gloursdocker/commetuveux:tags packaging v17.12.0-ce-rc2 60c0887ba5351ae61b49a14d025935c2ba099da6
+docker run --rm gloursdocker/commetuveux:tags packaging v17.12.0-ce-rc3 60c0887ba5351ae61b49a14d025935c2ba099da6
+docker run --rm gloursdocker/commetuveux:tags packaging v17.12.0-ce-rc4 60c0887ba5351ae61b49a14d025935c2ba099da6
+docker run --rm gloursdocker/commetuveux:tags packaging v17.12.1-ce c930e161a49ca1a08b81400557a0e1bb5b649e78
+docker run --rm gloursdocker/commetuveux:tags packaging v17.12.1-ce-rc1 c930e161a49ca1a08b81400557a0e1bb5b649e78
+docker run --rm gloursdocker/commetuveux:tags packaging v17.12.1-ce-rc2 c930e161a49ca1a08b81400557a0e1bb5b649e78
+docker run --rm gloursdocker/commetuveux:tags packaging v18.01.0-ce a8e527df5d6579cc53372c26ef86fdcf449aa9ae
+docker run --rm gloursdocker/commetuveux:tags packaging v18.01.0-ce-rc1 a8e527df5d6579cc53372c26ef86fdcf449aa9ae
+docker run --rm gloursdocker/commetuveux:tags packaging v18.02.0-ce 0e676c4bde1d429d21ea083a8bc9f40c0fc51269
+docker run --rm gloursdocker/commetuveux:tags packaging v18.02.0-ce-rc1 0e676c4bde1d429d21ea083a8bc9f40c0fc51269
+docker run --rm gloursdocker/commetuveux:tags packaging v18.02.0-ce-rc2 0e676c4bde1d429d21ea083a8bc9f40c0fc51269
+docker run --rm gloursdocker/commetuveux:tags packaging v18.03.0-ce 723fb9d704c84b3bfcf00597157b0b380cc19037
+docker run --rm gloursdocker/commetuveux:tags packaging v18.03.0-ce-rc1 9b3e8f85f039dfe7391512de6143ef213574973a
+docker run --rm gloursdocker/commetuveux:tags packaging v18.03.0-ce-rc2 e81c9a5480a6c131b23416239c0bde8a5a3680ad
+docker run --rm gloursdocker/commetuveux:tags packaging v18.03.0-ce-rc3 723fb9d704c84b3bfcf00597157b0b380cc19037
+docker run --rm gloursdocker/commetuveux:tags packaging v18.03.0-ce-rc4 723fb9d704c84b3bfcf00597157b0b380cc19037
+docker run --rm gloursdocker/commetuveux:tags packaging v18.03.1-ce 12b8c51478585eeb5c3a8bef3ba8d8b708a02760
+docker run --rm gloursdocker/commetuveux:tags packaging v18.03.1-ce-rc1 12b8c51478585eeb5c3a8bef3ba8d8b708a02760
+docker run --rm gloursdocker/commetuveux:tags packaging v18.03.1-ce-rc2 12b8c51478585eeb5c3a8bef3ba8d8b708a02760
+docker run --rm gloursdocker/commetuveux:tags packaging v18.04.0-ce 63be84fc6ed88847a003dfb32e0dc8bc9126411e
+docker run --rm gloursdocker/commetuveux:tags packaging v18.04.0-ce-rc1 63be84fc6ed88847a003dfb32e0dc8bc9126411e
+docker run --rm gloursdocker/commetuveux:tags packaging v18.04.0-ce-rc2 63be84fc6ed88847a003dfb32e0dc8bc9126411e
+docker run --rm gloursdocker/commetuveux:tags packaging v18.05.0-ce c62336593118020462d65d4e9784143e07de2da7
+docker run --rm gloursdocker/commetuveux:tags packaging v18.05.0-ce-rc1 c62336593118020462d65d4e9784143e07de2da7
 
 # CLI
-check cli v17.06.0-ce 57d3a0e1dad54d77594cbba23a6418ecbf5ac230
-check cli v17.06.0-ce-rc1 b4864fad111a663abf8c9d6991857d9fd060cbbf
-check cli v17.06.0-ce-rc2 8c7aba4ab7725aed13a52b77dd8d33c88970e0d6
-check cli v17.06.0-ce-rc3 0ac54d58f8b35e0ba5c0ebd91f5829716ac1d6f6
-check cli v17.06.0-ce-rc4 dcd5c998c6c2d96ff5ed05312333382d3e7820bb
-check cli v17.06.0-ce-rc5 7ba7f35d423e43bc9cb5b5a387d1a935a579b88c
-check cli v17.06.1-ce ea0a0373c441da65d40e5816d287d9d0c6d47581
-check cli v17.06.1-ce-rc1 3c336dc761730e3dd95fdbbc258d4687f66d8a43
-check cli v17.06.1-ce-rc2 939313f4ea8851e81a423c5240f3682620373492
-check cli v17.06.1-ce-rc3 5f9e8c298d374e7fce2db5547555cfd7fb51872e
-check cli v17.06.1-ce-rc4 311e8aa535e8df2a99a53b1c414038387f57924d
-check cli v17.06.2-ce 03b34f1f5faa65c3e60ab1d7a0d2ecf99e804c9e
-check cli v17.06.2-ce-rc1 1e9dba4819dc14d10c3c6e24e3567551d1494237
-check cli v17.07.0-ce d74686e6c1a49497998b38ff0f344250683c32a8
-check cli v17.07.0-ce-rc1 161a76157469569ff87ca07b498e85a3a6ca1969
-check cli v17.07.0-ce-rc2 807254cf0b9ce863368dcf2e772f585fcd217de3
-check cli v17.07.0-ce-rc3 60c9cf8eb8d1bbf840f4c5db96faef32b2789c1e
-check cli v17.07.0-ce-rc4 381f6dbc022389e1ebea7c4c9e442dda765288ed
-check cli v17.09.0-ce 551c0b2380c26805c47aa4a3339109d5754d3493
-check cli v17.09.0-ce-rc1 5a339b6b32747f14e2c94c5aa2788bd1bb75c520
-check cli v17.09.0-ce-rc2 48e2639411c651942b01c8c4e19676a8b512accc
-check cli v17.09.0-ce-rc3 eea938447625c5a09fcf56ef04ec99535563da8b
-check cli v17.09.1-ce 3fb95133411fac45cc5b278e723264efcf52946e
-check cli v17.09.1-ce-rc1 5fac918b829fed534ad66e14a2e1e1de3c125e0e
-check cli v17.10.0-ce b524db30ced63fbb3ec1362d031cfb59b06800a1
-check cli v17.10.0-ce-rc1 d2cf71ce5c005935d5833a5b1f78a7e5a8c31530
-check cli v17.10.0-ce-rc2 fc8d6a29197c9535cb8c66c32b9414732fd28b05
-check cli v17.11.0-ce 341110346f5a7b26d717f13339c6ffeb238e2b00
-check cli v17.11.0-ce-rc1 c3544074ccd3149e3a9eef4e909bc9090351e72f
-check cli v17.11.0-ce-rc2 d894a9bc2b0c0bb0577b8471036d115a8d08a56a
-check cli v17.11.0-ce-rc3 5f34c1cfcbbd9cfcc1667c85de6e3071471d600c
-check cli v17.11.0-ce-rc4 1ce587fbfa0e6262bfbf2b3d96e24160bec39204
-check cli v17.12.0-ce 2c27a45733f7217be67a278a6de25c1bf43b489c
-check cli v17.12.0-ce-rc1 cb151b253d4b38e2536e94480712396f9f52784f
-check cli v17.12.0-ce-rc2 5567d83cb6944652e318d2911f88c2cf7aa7838c
-check cli v17.12.0-ce-rc3 cba97ac4bede966e4e4fd54a08b1c006a27a1c87
-check cli v17.12.0-ce-rc4 50f32db3264eb195cc98d7be1bf89454bb46c982
-check cli v17.12.1-ce 9f395a8a67d4499fb874e20649b92234e26140cc
-check cli v17.12.1-ce-rc1 fbdca95c6c5cba29e8dc2d5e444f6a2babc3718a
-check cli v17.12.1-ce-rc2 c62be9b3b57a7675aaccb922f68b414115a5224b
-check cli v18.01.0-ce dbd165f3d2fd43d80bd4ee19f0d0232015b124e3
-check cli v18.01.0-ce-rc1 d64390db85eabc78f209c95ca751124912de83e2
-check cli v18.02.0-ce c2fc911a77bb061800ceecd9ec7567e54ad8bdbd
-check cli v18.02.0-ce-rc1 8583d015424c21b3dcdcebb6720af69b87bf9983
-check cli v18.02.0-ce-rc2 a3cc3bef8a49ae6bae274048aa19e66908201701
-check cli v18.03.0-ce c0c0d291dd210c50f7da581f316d8603107a59d7
-check cli v18.03.0-ce-rc1 0b1b7ea8913e7a8f4a2d01f89ed5943198213acf
-check cli v18.03.0-ce-rc2 6de4e3b8b4661d62f6dc98e99228ee7f7af2a801
-check cli v18.03.0-ce-rc3 9d277155590e25e4998ae6751be53f2528d245b2
-check cli v18.03.0-ce-rc4 0a115771172d339dd4624adb92edbabe5c9924eb
-check cli v18.03.1-ce 077dedce5df976938a10e453734616627e7cb0f7
-check cli v18.03.1-ce-rc1 e9c1dcaa07e811fa85aad8a1fe149bb231294457
-check cli v18.03.1-ce-rc2 a857f1a1155dca76b2cca36beb9175ae404b6cc6
-check cli v18.04.0-ce 9eb621b3483bf820aa3e36c9f00f0781f4054f90
-check cli v18.04.0-ce-rc1 b94602d9284126a350c6114fd1396d33b484c2bc
-check cli v18.04.0-ce-rc2 14fdd61b11740165464b46d78f54415765f9dc2c
-check cli v18.05.0-ce 7c86250b8a200f993836aefdb377d2ba7b5237fa
-check cli v18.05.0-ce-rc1 7c86250b8a200f993836aefdb377d2ba7b5237fa
-check cli v18.09.9-beta1 1752eb3626e3a17b0881135a9402e57728208fed
+docker run --rm gloursdocker/commetuveux:tags cli v17.06.0-ce e469928beb377d371b67af0c5527610aa69cafba
+docker run --rm gloursdocker/commetuveux:tags cli v17.06.0-ce-rc1 6db14582ee69de3fcf93d033af40b9031e27122b
+docker run --rm gloursdocker/commetuveux:tags cli v17.06.0-ce-rc2 908cc929f685fedb2e499da4650d26c030e9caca
+docker run --rm gloursdocker/commetuveux:tags cli v17.06.0-ce-rc3 86e38e39646774742e04ad6ef11c000696aa0557
+docker run --rm gloursdocker/commetuveux:tags cli v17.06.0-ce-rc4 3b37984fa81d87592ab8dd1600ca6912f1ac2f79
+docker run --rm gloursdocker/commetuveux:tags cli v17.06.0-ce-rc5 7106ee8c1659e73c4083ff4f56f7ee7e7ff5b08d
+docker run --rm gloursdocker/commetuveux:tags cli v17.06.1-ce 0ca4dee29c7e7885dd1e945be0c912e2b895b632
+docker run --rm gloursdocker/commetuveux:tags cli v17.06.1-ce-rc1 3df433ab1de770cbab78647af910cfa36abb91b8
+docker run --rm gloursdocker/commetuveux:tags cli v17.06.1-ce-rc2 ccc0618ab884cc68b0ecef2c1d5f84ce61abe0ca
+docker run --rm gloursdocker/commetuveux:tags cli v17.06.1-ce-rc3 76d4126f1083a4cfa347c4a365b89858eac843da
+docker run --rm gloursdocker/commetuveux:tags cli v17.06.1-ce-rc4 01e23f07a86d99d4031356bd6a9ab01d0f6a641d
+docker run --rm gloursdocker/commetuveux:tags cli v17.06.2-ce 902e309dbba49f92e33c0bff946032002b39812e
+docker run --rm gloursdocker/commetuveux:tags cli v17.06.2-ce-rc1 aa3bd2cb6f6c926a07b4b1b935a6029165cf7a0b
+docker run --rm gloursdocker/commetuveux:tags cli v17.07.0-ce 99c5b6a565dc1b8b297ee3f33b7d9892e6d91e29
+docker run --rm gloursdocker/commetuveux:tags cli v17.07.0-ce-rc1 7de9537ca62e70b1b57ce03c9d5368f551d9343a
+docker run --rm gloursdocker/commetuveux:tags cli v17.07.0-ce-rc2 213c17835e6f8d923067d6e6e853699a7168e436
+docker run --rm gloursdocker/commetuveux:tags cli v17.07.0-ce-rc3 db80c2420855b8b0c484c3c0be88bd5ad3b83efa
+docker run --rm gloursdocker/commetuveux:tags cli v17.07.0-ce-rc4 1f8b0380857d08b829f55ff34affc4a3a4148c67
+docker run --rm gloursdocker/commetuveux:tags cli v17.09.0-ce cf308d0af4da8f877d7567d5240fc4116f5abd74
+docker run --rm gloursdocker/commetuveux:tags cli v17.09.0-ce-rc1 185e0742a2dba0566a43958c60a117206da4524c
+docker run --rm gloursdocker/commetuveux:tags cli v17.09.0-ce-rc2 e6e985d0ae4d11ec3bbd9dea6552f5db518db18d
+docker run --rm gloursdocker/commetuveux:tags cli v17.09.0-ce-rc3 ade1d70d2b2e85d54f77c292f5e58c933957aa6d
+docker run --rm gloursdocker/commetuveux:tags cli v17.09.1-ce 406a8daca038706633f61acb185ee37005d27dc3
+docker run --rm gloursdocker/commetuveux:tags cli v17.09.1-ce-rc1 7edf16eea67c84f50ba073069f838a190aa68989
+docker run --rm gloursdocker/commetuveux:tags cli v17.10.0-ce 922500e10806026a27023d2eb2b7c035f7dd5ea7
+docker run --rm gloursdocker/commetuveux:tags cli v17.10.0-ce-rc1 b722e66f669ebb4454f97110d1b1a910239e0854
+docker run --rm gloursdocker/commetuveux:tags cli v17.10.0-ce-rc2 efdb3dfe0696ae7305d0d972dc690eff883d6bae
+docker run --rm gloursdocker/commetuveux:tags cli v17.11.0-ce 3e79491da3e56c625c63c7d669c0ec92e45a64f7
+docker run --rm gloursdocker/commetuveux:tags cli v17.11.0-ce-rc1 68a77dd32c587ecf63c0619e8b41f0d00e3f6011
+docker run --rm gloursdocker/commetuveux:tags cli v17.11.0-ce-rc2 64f7b11f8bbf180d5f4390e42e74e6cce5994436
+docker run --rm gloursdocker/commetuveux:tags cli v17.11.0-ce-rc3 2388ce357757664e1e82a25c9d292ae196e49e90
+docker run --rm gloursdocker/commetuveux:tags cli v17.11.0-ce-rc4 c0ea3b5c677827abfd42efca085b2ded7f4d27e3
+docker run --rm gloursdocker/commetuveux:tags cli v17.12.0-ce 1270fffefdae6ccb181f7491df8e8f52681e9cd3
+docker run --rm gloursdocker/commetuveux:tags cli v17.12.0-ce-rc1 965e7f966ff26283bd224212f11154b2c88dcea6
+docker run --rm gloursdocker/commetuveux:tags cli v17.12.0-ce-rc2 2f526a660c06da4063946ce68f2639ae029b0715
+docker run --rm gloursdocker/commetuveux:tags cli v17.12.0-ce-rc3 0289c87f4ca9f31fcbc454af388b0ee7eaa282d6
+docker run --rm gloursdocker/commetuveux:tags cli v17.12.0-ce-rc4 7ca613acaf19c17e4e8c92d120f690c22c139513
+docker run --rm gloursdocker/commetuveux:tags cli v17.12.1-ce 0a23d351e8f9c2dffb9b943f53948c7db48143c3
+docker run --rm gloursdocker/commetuveux:tags cli v17.12.1-ce-rc1 526ab88cd227ac305faac7862707c83031f2864e
+docker run --rm gloursdocker/commetuveux:tags cli v17.12.1-ce-rc2 34807279607f6f60f84002ea0425e474894bfd1e
+docker run --rm gloursdocker/commetuveux:tags cli v18.01.0-ce 733906602cab11eebc5fc8db3daa3db2e14d16e5
+docker run --rm gloursdocker/commetuveux:tags cli v18.01.0-ce-rc1 9fcb0e27955621c110372925030825431d39123e
+docker run --rm gloursdocker/commetuveux:tags cli v18.02.0-ce 84cab1201d0d935844fb808728a3f181807154bd
+docker run --rm gloursdocker/commetuveux:tags cli v18.02.0-ce-rc1 951f4db59635fc0d683be61add9388830c37db07
+docker run --rm gloursdocker/commetuveux:tags cli v18.02.0-ce-rc2 3004c74d1482ef6190ae3a755f702b55142924e2
+docker run --rm gloursdocker/commetuveux:tags cli v18.03.0-ce ab1f7a60ab14d253cdbaf53356a39416761c9d0d
+docker run --rm gloursdocker/commetuveux:tags cli v18.03.0-ce-rc1 6822619b70fefe1363230820d62eb2e5258fe890
+docker run --rm gloursdocker/commetuveux:tags cli v18.03.0-ce-rc2 03010f5c5394f8811b88cd18dcc2cf0e556cc0dc
+docker run --rm gloursdocker/commetuveux:tags cli v18.03.0-ce-rc3 a377bf461cd338c7009fe837bc3deaffe6255138
+docker run --rm gloursdocker/commetuveux:tags cli v18.03.0-ce-rc4 05e1b74e9f6546c63c7d46c8aad7c23f651febb4
+docker run --rm gloursdocker/commetuveux:tags cli v18.03.1-ce 201217f905cfe3f8ba88cb338bfb569256a9cf66
+docker run --rm gloursdocker/commetuveux:tags cli v18.03.1-ce-rc1 0f3dde05a0a59bf98d5f0a6f1f62b74a1bf9d466
+docker run --rm gloursdocker/commetuveux:tags cli v18.03.1-ce-rc2 a2e06f1711d9440574f5b1e15b3b988ade7d39e5
+docker run --rm gloursdocker/commetuveux:tags cli v18.04.0-ce 70ef66b422bca7c18466cd50aabf091cd315d319
+docker run --rm gloursdocker/commetuveux:tags cli v18.04.0-ce-rc1 b31018ed28f4e8fc23f484ab37eb76eabe30590b
+docker run --rm gloursdocker/commetuveux:tags cli v18.04.0-ce-rc2 9bbc6978ad4373b74c6acc8dff5d44d4869c9183
+docker run --rm gloursdocker/commetuveux:tags cli v18.05.0-ce 2ff6a2eddcf0256b5f314a9c21b866996f817dbf
+docker run --rm gloursdocker/commetuveux:tags cli v18.05.0-ce-rc1 5967142baa970408bc7b44a9c73799559b429270
 
 # Packaging
-check packaging v17.06.0-ce d6fd2c20c0cf3d08a5c036233447bbc3c77e1829
-check packaging v17.06.0-ce-rc1 f7098d293c50687e63b5c612202bf178710ca96d
-check packaging v17.06.0-ce-rc2 da34e06fd98332e24e38cefdfe1aefb4274c5a1b
-check packaging v17.06.0-ce-rc3 da34e06fd98332e24e38cefdfe1aefb4274c5a1b
-check packaging v17.06.0-ce-rc4 0bf5b5388e49aaac7c6be48b8c97d8f97a01e0d9
-check packaging v17.06.0-ce-rc5 d6fd2c20c0cf3d08a5c036233447bbc3c77e1829
-check packaging v17.06.1-ce 19775056a4898df423921bb5c47870e34e1c997b
-check packaging v17.06.1-ce-rc1 1183e6389f2e432c23c8beb85c7c6d6e13747d60
-check packaging v17.06.1-ce-rc2 1183e6389f2e432c23c8beb85c7c6d6e13747d60
-check packaging v17.06.1-ce-rc3 19775056a4898df423921bb5c47870e34e1c997b
-check packaging v17.06.1-ce-rc4 19775056a4898df423921bb5c47870e34e1c997b
-check packaging v17.06.2-ce 19775056a4898df423921bb5c47870e34e1c997b
-check packaging v17.06.2-ce-rc1 19775056a4898df423921bb5c47870e34e1c997b
-check packaging v17.07.0-ce 7c901365c3263747189d6ea8ec8225724a0f68f6
-check packaging v17.07.0-ce-rc1 7c901365c3263747189d6ea8ec8225724a0f68f6
-check packaging v17.07.0-ce-rc2 7c901365c3263747189d6ea8ec8225724a0f68f6
-check packaging v17.07.0-ce-rc3 7c901365c3263747189d6ea8ec8225724a0f68f6
-check packaging v17.07.0-ce-rc4 7c901365c3263747189d6ea8ec8225724a0f68f6
-check packaging v17.09.0-ce cc3be7f52531077a29c2da0deef5f25a8631f3a1
-check packaging v17.09.0-ce-rc1 cc3be7f52531077a29c2da0deef5f25a8631f3a1
-check packaging v17.09.0-ce-rc2 cc3be7f52531077a29c2da0deef5f25a8631f3a1
-check packaging v17.09.0-ce-rc3 cc3be7f52531077a29c2da0deef5f25a8631f3a1
-check packaging v17.09.1-ce cc3be7f52531077a29c2da0deef5f25a8631f3a1
-check packaging v17.09.1-ce-rc1 cc3be7f52531077a29c2da0deef5f25a8631f3a1
-check packaging v17.10.0-ce 2cea55c9434011bf181715fdf6a29e7049fcabfe
-check packaging v17.10.0-ce-rc1 a1debdbcf0220c10799fce225f2f189e681de385
-check packaging v17.10.0-ce-rc2 2cea55c9434011bf181715fdf6a29e7049fcabfe
-check packaging v17.11.0-ce 986aad8023766a04d0cd2f5507f50591a21cbbdd
-check packaging v17.11.0-ce-rc1 e2507465495d5361fe9501a5f5e7172779a67e63
-check packaging v17.11.0-ce-rc2 986aad8023766a04d0cd2f5507f50591a21cbbdd
-check packaging v17.11.0-ce-rc3 986aad8023766a04d0cd2f5507f50591a21cbbdd
-check packaging v17.11.0-ce-rc4 986aad8023766a04d0cd2f5507f50591a21cbbdd
-check packaging v17.12.0-ce 13137519814f4b1abbc5e3cc803c04ea4ef40867
-check packaging v17.12.0-ce-rc1 6e901d8febcb7c308035952baa760779ab097806
-check packaging v17.12.0-ce-rc2 13137519814f4b1abbc5e3cc803c04ea4ef40867
-check packaging v17.12.0-ce-rc3 13137519814f4b1abbc5e3cc803c04ea4ef40867
-check packaging v17.12.0-ce-rc4 13137519814f4b1abbc5e3cc803c04ea4ef40867
-check packaging v17.12.1-ce c2bf4f23d771878495ef8b7dabb69968fe45fb4c
-check packaging v17.12.1-ce-rc1 c2bf4f23d771878495ef8b7dabb69968fe45fb4c
-check packaging v17.12.1-ce-rc2 c2bf4f23d771878495ef8b7dabb69968fe45fb4c
-check packaging v18.01.0-ce 41ae603d88e02e950ba4f3e227f9f6e972a3c74b
-check packaging v18.01.0-ce-rc1 41ae603d88e02e950ba4f3e227f9f6e972a3c74b
-check packaging v18.02.0-ce 7ea33ac7993e2abfd2404e147d95a3b41a29ccbe
-check packaging v18.02.0-ce-rc1 7ea33ac7993e2abfd2404e147d95a3b41a29ccbe
-check packaging v18.02.0-ce-rc2 7ea33ac7993e2abfd2404e147d95a3b41a29ccbe
-check packaging v18.03.0-ce 95930e87947055e4d3b8c639f3ee5fc427fb71a0
-check packaging v18.03.0-ce-rc1 138ca8c7ad6e70f522f80444c6508292d3a6fc46
-check packaging v18.03.0-ce-rc2 88176d01f492b112472467a747abc3ba98dd41d8
-check packaging v18.03.0-ce-rc3 89ec01afcb73f0a7c01816e56cf9cd63a2ed5778
-check packaging v18.03.0-ce-rc4 9cc70ae1b07897d64b48b02b46f6457944fcc3b5
-check packaging v18.03.1-ce fdb8850492b82da66ee7f5acecc27731952e8f0d
-check packaging v18.03.1-ce-rc1 7dd4bb6171adaf3a21022a38a1218779943f35cb
-check packaging v18.03.1-ce-rc2 b45862f481ecdd86568e01bd15952dc3e8467c5a
-check packaging v18.04.0-ce 237393c19a148f0ab9d2cc7efc0b549c52e611aa
-check packaging v18.04.0-ce-rc1 03b5f310ee5eff2a3550524b0b47c46e665c3584
-check packaging v18.04.0-ce-rc2 456461a7864834883d0abb44d9369d68bb5f75c5
-check packaging v18.05.0-ce c216602d16cfefdb175cdb902038789b00dd2cef
-check packaging v18.05.0-ce-rc1 c216602d16cfefdb175cdb902038789b00dd2cef
-check packaging v18.09.9-beta1 abda7e1227ba45584a6abbf6fbc07e31f970380f
+docker run --rm gloursdocker/commetuveux:tags engine v17.06.0-ce 0e3ed7256664022a0676f66aeeb6526bdd91a7ed
+docker run --rm gloursdocker/commetuveux:tags engine v17.06.0-ce-rc1 46983742fab478d5175fa32317aead60e20530ac
+docker run --rm gloursdocker/commetuveux:tags engine v17.06.0-ce-rc2 8af745a953186614c3b1ceb737a7c67ecf76fa21
+docker run --rm gloursdocker/commetuveux:tags engine v17.06.0-ce-rc3 131480d2b5c652bde6b65a26ba817b9a71dc12e6
+docker run --rm gloursdocker/commetuveux:tags engine v17.06.0-ce-rc4 6f6cfb7b361740feffbf1d9d091f073f8e5349ab
+docker run --rm gloursdocker/commetuveux:tags engine v17.06.0-ce-rc5 29373765d0b462a38d986df33282eaa3463c692b
+docker run --rm gloursdocker/commetuveux:tags engine v17.06.1-ce aca80ee6a779fcc65a5d3b6fc19846815b442da3
+docker run --rm gloursdocker/commetuveux:tags engine v17.06.1-ce-rc1 459951a24e7e1f3f91621e4e4be26afdcc5a2172
+docker run --rm gloursdocker/commetuveux:tags engine v17.06.1-ce-rc2 19b83453c3c19519a868d2bcbb855300983c15d4
+docker run --rm gloursdocker/commetuveux:tags engine v17.06.1-ce-rc3 9d5fd1d98c43ad52c9d719287a01f9ea03360b6b
+docker run --rm gloursdocker/commetuveux:tags engine v17.06.1-ce-rc4 2ff99faa19b3b59f9b43820d9d9861316cd2d91a
+docker run --rm gloursdocker/commetuveux:tags engine v17.06.2-ce 65f5f7f32c0db72f5497051a1966cb3056e099d8
+docker run --rm gloursdocker/commetuveux:tags engine v17.06.2-ce-rc1 c0c71dd35dc731f9abf957947b4df1aa0a05a81d
+docker run --rm gloursdocker/commetuveux:tags engine v17.07.0-ce 57f49795ed2f3d42f4834755b825be4b82b9e7c3
+docker run --rm gloursdocker/commetuveux:tags engine v17.07.0-ce-rc1 1b55b2e941046b6f6da3a58b6d2a07d8e2c778df
+docker run --rm gloursdocker/commetuveux:tags engine v17.07.0-ce-rc2 3ca8c7ab27ff5a249a693fab596ed01e276b775c
+docker run --rm gloursdocker/commetuveux:tags engine v17.07.0-ce-rc3 10d8b9a8c21d739fdb147738695e4cc0c23336ae
+docker run --rm gloursdocker/commetuveux:tags engine v17.07.0-ce-rc4 60b315de4ecf338cb6af8c98b2cc3239d0994659
+docker run --rm gloursdocker/commetuveux:tags engine v17.09.0-ce b1653a66be8956d5991da241ed751b54cf80a03a
+docker run --rm gloursdocker/commetuveux:tags engine v17.09.0-ce-rc1 002f45b538562072bf0a4eeb7ee1ca607747056b
+docker run --rm gloursdocker/commetuveux:tags engine v17.09.0-ce-rc2 91a0dc59242495207842f203fded729f2711ba8f
+docker run --rm gloursdocker/commetuveux:tags engine v17.09.0-ce-rc3 d5fa25f84eb04e16bdcdb44bf75903e16b28520b
+docker run --rm gloursdocker/commetuveux:tags engine v17.09.1-ce 3464b4f9cdc3b1d16e206792c8d1f1f60dea962a
+docker run --rm gloursdocker/commetuveux:tags engine v17.09.1-ce-rc1 cf42197c935106c4dc6e8f9050417a12da95c578
+docker run --rm gloursdocker/commetuveux:tags engine v17.10.0-ce 205df0a0e9fceb87c85dd07446a6641eaf83910a
+docker run --rm gloursdocker/commetuveux:tags engine v17.10.0-ce-rc1 1d483e7794a540b515cda20110095eced8c8145f
+docker run --rm gloursdocker/commetuveux:tags engine v17.10.0-ce-rc2 3846e9e7583ddef818c1eacc5abf177f99d4761b
+docker run --rm gloursdocker/commetuveux:tags engine v17.11.0-ce 0403927097cbec7d4e951d627c548286e004fbcf
+docker run --rm gloursdocker/commetuveux:tags engine v17.11.0-ce-rc1 ea348c202a7bd6b4561a34b53400a64121603849
+docker run --rm gloursdocker/commetuveux:tags engine v17.11.0-ce-rc2 e5e0b6cf5ead26c9991eba7b398d2e40467b34f0
+docker run --rm gloursdocker/commetuveux:tags engine v17.11.0-ce-rc3 b6c07a7f76a45c65a25f2447aa37466056011626
+docker run --rm gloursdocker/commetuveux:tags engine v17.11.0-ce-rc4 996c8050ee9468db2da3438636516a4180e31f27
+docker run --rm gloursdocker/commetuveux:tags engine v17.12.0-ce 8fbf27c00631b83d3e3c96e75d0f078c1b52aa1c
+docker run --rm gloursdocker/commetuveux:tags engine v17.12.0-ce-rc1 cb8283a6e95f33a93fab0044ca4306cf468faf8c
+docker run --rm gloursdocker/commetuveux:tags engine v17.12.0-ce-rc2 5e1bbb72f1d1de0dd0c2c0beedd4348e214c15be
+docker run --rm gloursdocker/commetuveux:tags engine v17.12.0-ce-rc3 552fed26c3146e2c75c2c0bbfc5a3a5bec980ce9
+docker run --rm gloursdocker/commetuveux:tags engine v17.12.0-ce-rc4 8fbf27c00631b83d3e3c96e75d0f078c1b52aa1c
+docker run --rm gloursdocker/commetuveux:tags engine v17.12.1-ce bbc5bc9792287921cff363f72adce06636a7721f
+docker run --rm gloursdocker/commetuveux:tags engine v17.12.1-ce-rc1 a3b9ebd356798aa564f5e2dd310eb8decc0bcfd8
+docker run --rm gloursdocker/commetuveux:tags engine v17.12.1-ce-rc2 bbc5bc9792287921cff363f72adce06636a7721f
+docker run --rm gloursdocker/commetuveux:tags engine v18.01.0-ce 73059b3e6cc6fde8b934c871a0a381d0c0162329
+docker run --rm gloursdocker/commetuveux:tags engine v18.01.0-ce-rc1 73059b3e6cc6fde8b934c871a0a381d0c0162329
+docker run --rm gloursdocker/commetuveux:tags engine v18.02.0-ce b2a1e7330f61b61654c7fb1bc2b8eed8d3075a2f
+docker run --rm gloursdocker/commetuveux:tags engine v18.02.0-ce-rc1 e4559961eb214bd856efaed7fcf22285ac36280e
+docker run --rm gloursdocker/commetuveux:tags engine v18.02.0-ce-rc2 b2a1e7330f61b61654c7fb1bc2b8eed8d3075a2f
+docker run --rm gloursdocker/commetuveux:tags engine v18.03.0-ce 7d96fc47a1c19208ffd102cecf49a8b046a059cf
+docker run --rm gloursdocker/commetuveux:tags engine v18.03.0-ce-rc1 238986941e0109942f02bf1964e6d6de5243b557
+docker run --rm gloursdocker/commetuveux:tags engine v18.03.0-ce-rc2 124378d920b6046868f06c813eb4eb48a6ffa5d1
+docker run --rm gloursdocker/commetuveux:tags engine v18.03.0-ce-rc3 aee7d6537ce83bd177a4d297d87a9c3ebff26d01
+docker run --rm gloursdocker/commetuveux:tags engine v18.03.0-ce-rc4 7d96fc47a1c19208ffd102cecf49a8b046a059cf
+docker run --rm gloursdocker/commetuveux:tags engine v18.03.1-ce 9f61f26ec19d8b457fad055b87643a44f1cdc595
+docker run --rm gloursdocker/commetuveux:tags engine v18.03.1-ce-rc1 3a055a67cbede7a01da7dd68e280e9d83c33a367
+docker run --rm gloursdocker/commetuveux:tags engine v18.03.1-ce-rc2 7f771487df1f05b1326673310be18490aeb8410d
+docker run --rm gloursdocker/commetuveux:tags engine v18.04.0-ce 633eda4036137f0efcec4604cf807dbff508cb9c
+docker run --rm gloursdocker/commetuveux:tags engine v18.04.0-ce-rc1 82c44711cc59c150d09c87506a9bd648599ea0d6
+docker run --rm gloursdocker/commetuveux:tags engine v18.04.0-ce-rc2 633eda4036137f0efcec4604cf807dbff508cb9c
+docker run --rm gloursdocker/commetuveux:tags engine v18.05.0-ce 4f47113ea809b93b053929934abab282e0fc6754
+docker run --rm gloursdocker/commetuveux:tags engine v18.05.0-ce-rc1 4f47113ea809b93b053929934abab282e0fc6754

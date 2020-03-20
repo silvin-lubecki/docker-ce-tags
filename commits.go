@@ -69,28 +69,6 @@ func GetLastParent(commit *object.Commit) (*object.Commit, error) {
 	return parent, err
 }
 
-func FindCommitOnComponent(dockerCe, component *Remote, tagName, componentName string) (*object.Commit, *object.Commit, error) {
-	// find commit related to selected tag
-	tag, err := getTag(dockerCe, tagName)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	// find latest merge commit comming from bot merging component
-	componentMergeCommit, err := dockerCe.FindComponentCommit(tag.Commit, componentName)
-	if err != nil {
-		return nil, nil, err
-	}
-	// clean that message
-	cleanedMessage := CleanCommitMessage(componentMergeCommit.Message)
-	// find that message in the upstream repo
-	componentCommit, err := component.FindCommitByMessage(cleanedMessage)
-	if err != nil {
-		return nil, nil, err
-	}
-	return componentMergeCommit, componentCommit, nil
-}
-
 func CherryPickOnBranch(dockerCe *Remote, branchName, component string) (*object.Commit, error) {
 	// First find common ancestor between master branch and targeted branch
 	master, err := dockerCe.GetHead("master")

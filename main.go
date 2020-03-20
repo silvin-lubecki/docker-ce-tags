@@ -24,9 +24,10 @@ func main() {
 	conf := loadConfig(os.Args[2])
 	dockerCe, err := NewRemote(conf.UpstreamPath, conf.UpstreamRemote)
 	checkErr(err)
+	//fmt.Println("docker ce")
 	component, err := NewRemote(conf.ComponentPath, conf.ComponentRemote)
 	checkErr(err)
-	result, err := NewRemote("/Users/silvin/dev/go/src/github.com/silvin-lubecki/engine-extract", "silvin-lubecki/engine-extract")
+	result, err := NewRemote("/tmp/extract/engine-extract", "silvin-lubecki/engine-extract")
 	checkErr(err)
 
 	switch os.Args[1] {
@@ -34,21 +35,24 @@ func main() {
 		tags, err := computeDiffTags(dockerCe, component)
 		checkErr(err)
 		for _, tag := range tags {
-			fmt.Printf("| %s | ", tag.Name)
 			branchName := fmt.Sprintf("%s-extract-%s", tag.Name[1:6], conf.Component)
 			branch, err := result.GetHead(branchName)
+			//fmt.Println(tag.Name, branchName, branch.Hash)
 			checkErr(err)
-			componentCommit, err := dockerCe.FindComponentCommit(tag.Commit, conf.Component)
+			componentCommit, err := dockerCe.FindComponentCommit("/tmp/extract/docker-ce", "origin/"+tag.Name[1:6], tag.Commit, conf.Component)
 			checkErr(err)
-			commit, err := result.FindCommitByMessageStartByBranch(branch.Hash, CleanCommitMessage(componentCommit.Message))
+			//fmt.Println("COMPONENT COMMIT ", componentCommit.Hash, componentCommit.Message)
+			commit, err := result.FindCommitByMessageStartByBranch(branch.Hash, "/tmp/extract/engine-extract", branchName, CleanCommitMessage(componentCommit.Message))
 			checkErr(err)
 
-			fmt.Println("TAG ", tag.Commit.Hash, "| COMMIT FOUND", commit.Hash, "|")
-			fmt.Println("BRANCH COMMIT ", branch.Hash)
-			fmt.Println("COMPONENT COMMIT ", componentCommit.Hash)
+			//fmt.Println("TAG ", tag.Commit.Hash, "| COMMIT FOUND", commit.Hash, "|")
+			//fmt.Println("BRANCH COMMIT ", branch.Hash)
+			//fmt.Println("COMPONENT COMMIT ", componentCommit.Hash)
+			fmt.Println("docker run --rm gloursdocker/commetuveux:tags", conf.Component, tag.Name, commit.Hash)
 		}
 
 	case "branch":
+		fmt.Println("extract head", conf.Branch+"-extract-"+conf.Component)
 		extractHead, err := dockerCe.GetHead(conf.Branch + "-extract-" + conf.Component)
 		checkErr(err)
 
@@ -119,19 +123,6 @@ func main() {
 			// }
 			// fmt.Println(c.Hash, found.Hash)
 			fmt.Fprintln(f, c)
-		}
-
-	case "all-tags":
-		tags, err := computeDiffTags(dockerCe, component)
-		checkErr(err)
-		for _, tag := range tags {
-			fmt.Println("Checking", tag.Name)
-			dockerCeCommit, componentCommit, err := FindCommitOnComponent(dockerCe, result, tag.Name, conf.Component)
-			checkErr(err)
-			if dockerCeCommit == nil || componentCommit == nil {
-				checkErr(fmt.Errorf("%q failed to get commits", tag.Name))
-			}
-			fmt.Println("docker/docker-ce", dockerCeCommit.Hash, "docker/"+conf.Component, componentCommit.Hash)
 		}
 
 	case "sign-off":
