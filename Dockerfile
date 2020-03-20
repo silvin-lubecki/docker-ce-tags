@@ -22,7 +22,7 @@ RUN cd /tmp/extract/docker-ce &&\
     git remote add silvin https://github.com/silvin-lubecki/docker-ce &&\
     git fetch silvin
 RUN cd /tmp/extract/packaging-extract &&\
-    git remote add docker https://github.com/docker/engine &&\
+    git remote add docker https://github.com/docker/docker-ce-packaging &&\
     git fetch docker &&\
     git checkout -b 17.06-extract-packaging origin/17.06-extract-packaging &&\
     git checkout -b 17.07-extract-packaging origin/17.07-extract-packaging &&\
@@ -36,8 +36,8 @@ RUN cd /tmp/extract/packaging-extract &&\
     git checkout -b 18.04-extract-packaging origin/18.04-extract-packaging &&\
     git checkout -b 18.05-extract-packaging origin/18.05-extract-packaging
 RUN cd /tmp/extract/cli-extract &&\
-    git fetch docker &&\
     git remote add docker https://github.com/docker/cli &&\
+    git fetch docker &&\
     git checkout -b 17.06-extract-cli origin/17.06-extract-cli &&\
     git checkout -b 17.07-extract-cli origin/17.07-extract-cli &&\
     git checkout -b 17.09-extract-cli origin/17.09-extract-cli &&\
@@ -50,8 +50,8 @@ RUN cd /tmp/extract/cli-extract &&\
     git checkout -b 18.04-extract-cli origin/18.04-extract-cli &&\
     git checkout -b 18.05-extract-cli origin/18.05-extract-cli
 RUN cd /tmp/extract/engine-extract &&\
+    git remote add docker https://github.com/docker/engine &&\
     git fetch docker &&\
-    git remote add docker https://github.com/docker/docker-ce-packagine &&\
     git checkout -b 17.06-extract-engine origin/17.06-extract-engine &&\
     git checkout -b 17.07-extract-engine origin/17.07-extract-engine &&\
     git checkout -b 17.09-extract-engine origin/17.09-extract-engine &&\
